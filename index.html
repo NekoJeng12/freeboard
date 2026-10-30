@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="th" class="light">
+<html lang="th" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IoT-230 ESP32 Realtime Dashboard</title>
+  <title>TERRA-PULSE 230 | Advanced IoT Command Center</title>
   
-  <!-- Google Fonts: Inter & Sarabun -->
+  <!-- Google Fonts: Plus Jakarta Sans & Prompt -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Prompt:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -18,15 +18,20 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Sarabun', 'Inter', 'sans-serif'],
+            sans: ['Prompt', 'Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
           },
           colors: {
-            brand: {
-              50: '#f0f7ff',
-              100: '#e0effe',
-              500: '#0284c7',
-              600: '#0369a1',
-              700: '#075985',
+            cyber: {
+              bg: '#080c14',
+              surface: '#0f172a',
+              card: '#131d33',
+              border: '#1e2d4d',
+              accent: '#00f2fe',
+              emerald: '#10b981',
+              violet: '#8b5cf6',
+              rose: '#f43f5e',
+              amber: '#f59e0b',
             }
           }
         }
@@ -40,513 +45,621 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
+    /* Custom Styling for High-Tech Command Center */
     body {
-      background-color: #f8fafc;
-      color: #0f172a;
+      background-color: #080c14;
+      color: #e2e8f0;
+      overflow-x: hidden;
       transition: background-color 0.3s, color 0.3s;
     }
-    .dark body {
-      background-color: #090d16;
-      color: #f1f5f9;
+    .light body {
+      background-color: #f1f5f9;
+      color: #0f172a;
     }
-    .card-glass {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(12px);
+
+    /* Ambient Background Glow */
+    .ambient-glow {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 600px;
+      background: radial-gradient(circle 600px at 50% -100px, rgba(14, 165, 233, 0.15), rgba(139, 92, 246, 0.08), transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .light .ambient-glow {
+      background: radial-gradient(circle 600px at 50% -100px, rgba(14, 165, 233, 0.12), rgba(16, 185, 129, 0.08), transparent);
+    }
+
+    /* Glass Cards */
+    .glass-card {
+      background: rgba(19, 29, 51, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass-card:hover {
+      border-color: rgba(0, 242, 254, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px -10px rgba(0, 242, 254, 0.12);
+    }
+    .light .glass-card {
+      background: rgba(255, 255, 255, 0.88);
       border: 1px solid rgba(226, 232, 240, 0.9);
-      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
     }
-    .dark .card-glass {
-      background: rgba(17, 24, 39, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.3);
+    .light .glass-card:hover {
+      border-color: rgba(2, 132, 199, 0.4);
+      box-shadow: 0 15px 30px -5px rgba(2, 132, 199, 0.1);
     }
-    .pulse-dot {
-      animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
+
+    /* Pulse Animations */
     @keyframes pulse-ring {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(1.15); }
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.15); opacity: 0.4; }
+      100% { transform: scale(0.95); opacity: 0.8; }
     }
-    .custom-scrollbar::-webkit-scrollbar {
-      height: 6px;
+    .status-ring {
+      animation: pulse-ring 2.5s infinite;
+    }
+
+    /* Radial Progress Gauge */
+    .gauge-circle {
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+      transition: stroke-dashoffset 0.8s ease-in-out;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
       width: 6px;
+      height: 6px;
     }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
       border-radius: 9999px;
     }
-    .dark .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #334155;
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+    .light ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .light ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
     }
   </style>
 </head>
-<body class="min-h-screen font-sans selection:bg-sky-500 selection:text-white pb-14">
+<body class="min-h-screen selection:bg-cyan-500 selection:text-black relative">
 
-  <!-- TOP NAVIGATION / HEADER -->
-  <header class="sticky top-0 z-50 card-glass border-b transition-colors duration-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
-      
-      <!-- Logo & Title -->
-      <div class="flex items-center gap-3">
-        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-sky-600 to-cyan-400 flex items-center justify-center text-white shadow-md shadow-sky-500/20 font-bold text-lg tracking-wider">
-          IoT
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-800 dark:text-white">
-              ESP32 Realtime Dashboard
-            </h1>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
-              iot-230
-            </span>
-          </div>
-          <p class="text-xs text-slate-500 dark:text-slate-400">
-            Firebase Realtime Database • ระบบตรวจวัดและรายงานผลอัตโนมัติ 7 เซนเซอร์
-          </p>
-        </div>
-      </div>
+  <!-- Ambient Ambient Light Effect -->
+  <div class="ambient-glow"></div>
 
-      <!-- Live Status & Utility Controls -->
-      <div class="flex items-center gap-3">
-        <!-- Live Connection Pill -->
-        <div id="connectionStatus" class="flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/70 dark:text-emerald-300 dark:border-emerald-800/80 shadow-sm transition-all">
-          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 pulse-dot"></span>
-          <span id="connectionText">LIVE • เชื่อมต่อ Firebase แล้ว</span>
-        </div>
+  <!-- MAIN WRAPPER -->
+  <div class="relative z-10 flex flex-col min-h-screen">
 
-        <!-- Refresh Button -->
-        <button onclick="fetchLatestData(true)" title="รีเฟรชข้อมูลเดี๋ยวนี้" class="p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-all">
-          <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-        </button>
-
-        <!-- Sound Alert Toggle -->
-        <button id="soundBtn" onclick="toggleSound()" title="เปิด/ปิด เสียงเตือน" class="p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-all">
-          <i data-lucide="volume-x" id="soundIcon" class="w-4 h-4"></i>
-        </button>
-
-        <!-- Dark/Light Mode Toggle -->
-        <button onclick="toggleDarkMode()" title="สลับโหมด มืด/สว่าง" class="p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-all">
-          <i data-lucide="moon" id="themeIcon" class="w-4 h-4"></i>
-        </button>
-      </div>
-
-    </div>
-  </header>
-
-  <!-- MAIN CONTAINER -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
-
-    <!-- DEVICE & DATABASE METADATA BAR -->
-    <div class="card-glass rounded-2xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 border border-slate-200/80 dark:border-slate-800/80">
-      <div class="flex items-center gap-4">
-        <div class="p-3 rounded-xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 border border-sky-100 dark:border-sky-900">
-          <i data-lucide="cpu" class="w-6 h-6"></i>
-        </div>
-        <div>
-          <div class="text-[11px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500">
-            DEVICE & HOST NODE
-          </div>
-          <div class="text-base sm:text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
-            ESP32 (DevKit V1)
-            <span class="text-xs font-normal text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Online
-            </span>
-          </div>
-          <div class="text-xs font-mono text-sky-600 dark:text-sky-400 flex items-center gap-1 mt-0.5">
-            <span>/lab/esp32/latest</span>
-            <span class="text-slate-400">•</span>
-            <span>/lab/esp32/history</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Timestamp & Last Updated Counter -->
-      <div class="text-right ml-auto">
-        <div id="systemClock" class="text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-100 tracking-tight">
-          --/--/---- --:--:--
-        </div>
-        <div class="text-xs text-slate-500 dark:text-slate-400 flex items-center justify-end gap-1.5 mt-0.5">
-          <i data-lucide="clock" class="w-3.5 h-3.5"></i>
-          <span>ข้อมูลเมื่อ <span id="timeAgoText" class="font-semibold text-sky-600 dark:text-sky-400">0 วินาที</span> ที่แล้ว</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- SENSORS METRICS GRID (7 SENSORS) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-
-      <!-- 1. อุณหภูมิ (Temperature) -->
-      <div class="card-glass rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800/80 hover:shadow-lg transition-all relative overflow-hidden group">
-        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-500 to-amber-500"></div>
-        <div class="flex items-center justify-between mb-2">
-          <div class="flex items-center gap-2">
-            <span class="p-2 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-500">
-              <i data-lucide="thermometer" class="w-4 h-4"></i>
-            </span>
-            <span class="text-sm font-semibold text-slate-700 dark:text-slate-200">อุณหภูมิ</span>
-          </div>
-          <div id="delta-temp" class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-            ─ 0.0
-          </div>
-        </div>
-        <div class="flex items-baseline gap-1 my-1">
-          <span id="val-temp" class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">--</span>
-          <span class="text-sm font-medium text-slate-500 dark:text-slate-400">°C</span>
-        </div>
-        <div class="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500 pt-3 border-t border-slate-100 dark:border-slate-800/60">
-          <span class="font-mono">temp</span>
-          <span id="stat-temp">ต่ำสุด -- · สูงสุด --</span>
-        </div>
-      </div>
-
-      <!-- 2. ความชื้นสัมพัทธ์ (Humidity) -->
-      <div class="card-glass rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800/80 hover:shadow-lg transition-all relative overflow-hidden group">
-        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-500 to-blue-600"></div>
-        <div class="flex items-center justify-between mb-2">
-          <div class="flex items-center gap-2">
-            <span class="p-2 rounded-xl bg-sky-50 dark:bg-sky-950/60 text-sky-500">
-              <i data-lucide="droplets" class="w-4 h-4"></i>
-            </span>
-            <span class="text-sm font-semibold text-slate-700 dark:text-slate-200">ความชื้นสัมพัทธ์</span>
-          </div>
-          <div id="delta-humi" class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-            ─ 0.0
-          </div>
-        </div>
-        <div class="flex items-baseline gap-1 my-1">
-          <span id="val-humi" class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">--</span>
-          <span class="text-sm font-medium text-slate-500 dark:text-slate-400">%</span>
-        </div>
-        <div class="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500 pt-3 border-t border-slate-100 dark:border-slate-800/60">
-          <span class="font-mono">humi</span>
-          <span id="stat-humi">ต่ำสุด -- · สูงสุด --</span>
-        </div>
-      </div>
-
-      <!-- 3. ความเข้มแสง (Light Intensity) -->
-      <div class="card-glass rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800/80 hover:shadow-lg transition-all relative overflow-hidden group">
-        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 to-yellow-500"></div>
-        <div class="flex items-center justify-between mb-2">
-          <div class="flex items-center gap-2">
-            <span class="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-500">
-              <i data-lucide="sun" class="w-4 h-4"></i>
-            </span>
-            <span class="text-sm font-semibold text-slate-700 dark:text-slate-200">ความเข้มแสง</span>
-          </div>
-          <div id="delta-light" class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-            ─ 0
-          </div>
-        </div>
-        <div class="flex items-baseline gap-1 my-1">
-          <span id="val-light" class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">--</span>
-          <span class="text-sm font-medium text-slate-500 dark:text-slate-400">lx</span>
-        </div>
-        <div class="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500 pt-3 border-t border-slate-100 dark:border-slate-800/60">
-          <span class="font-mono">light</span>
-          <span id="stat-light">ต่ำสุด -- · สูงสุด --</span>
-        </div>
-      </div>
-
-      <!-- 4. ความชื้นในดิน (Soil Moisture) -->
-      <div class="card-glass rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800/80 hover:shadow-lg transition-all relative overflow-hidden group">
-        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-green-600"></div>
-        <div class="flex items-center justify-between mb-2">
-          <div class="flex items-center gap-2">
-            <span class="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-500">
-              <i data-lucide="sprout" class="w-4 h-4"></i>
-            </span>
-            <span class="text-sm font-semibold text-slate-700 dark:text-slate-200">ความชื้นในดิน</span>
-          </div>
-          <div id="delta-soil" class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-            ─ 0.0
-          </div>
-        </div>
-        <div class="flex items-baseline gap-1 my-1">
-          <span id="val-soil" class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">--</span>
-          <span class="text-sm font-medium text-slate-500 dark:text-slate-400">%</span>
-        </div>
-        <div class="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500 pt-3 border-t border-slate-100 dark:border-slate-800/60">
-          <span class="font-mono">soil</span>
-          <span id="stat-soil">ต่ำสุด -- · สูงสุด --</span>
-        </div>
-      </div>
-
-      <!-- 5. ก๊าซคาร์บอนไดออกไซด์ (CO2 Concentration) -->
-      <div class="card-glass rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800/80 hover:shadow-lg transition-all relative overflow-hidden group">
-        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-indigo-600"></div>
-        <div class="flex items-center justify-between mb-2">
-          <div class="flex items-center gap-2">
-            <span class="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-500">
-              <i data-lucide="wind" class="w-4 h-4"></i>
-            </span>
-            <span class="text-sm font-semibold text-slate-700 dark:text-slate-200">ก๊าซ CO2</span>
-          </div>
-          <div id="delta-co2" class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-            ─ 0
-          </div>
-        </div>
-        <div class="flex items-baseline gap-1 my-1">
-          <span id="val-co2" class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">--</span>
-          <span class="text-sm font-medium text-slate-500 dark:text-slate-400">ppm</span>
-        </div>
-        <div class="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500 pt-3 border-t border-slate-100 dark:border-slate-800/60">
-          <span class="font-mono">co2</span>
-          <span id="stat-co2">ต่ำสุด -- · สูงสุด --</span>
-        </div>
-      </div>
-
-      <!-- 6. ฝุ่นละออง PM2.5 (PM2.5 Dust) -->
-      <div class="card-glass rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800/80 hover:shadow-lg transition-all relative overflow-hidden group">
-        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-400 to-cyan-500"></div>
-        <div class="flex items-center justify-between mb-2">
-          <div class="flex items-center gap-2">
-            <span class="p-2 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-500">
-              <i data-lucide="cloud-fog" class="w-4 h-4"></i>
-            </span>
-            <span class="text-sm font-semibold text-slate-700 dark:text-slate-200">ฝุ่น PM2.5</span>
-          </div>
-          <div id="delta-pm25" class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-            ─ 0.0
-          </div>
-        </div>
-        <div class="flex items-baseline gap-1 my-1">
-          <span id="val-pm25" class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">--</span>
-          <span class="text-sm font-medium text-slate-500 dark:text-slate-400">µg/m³</span>
-        </div>
-        <div class="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500 pt-3 border-t border-slate-100 dark:border-slate-800/60">
-          <span class="font-mono">pm25</span>
-          <span id="stat-pm25">ต่ำสุด -- · สูงสุด --</span>
-        </div>
-      </div>
-
-      <!-- 7. ระดับน้ำสำรอง (Water Reservoir) -->
-      <div class="card-glass rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800/80 hover:shadow-lg transition-all relative overflow-hidden group">
-        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 to-indigo-700"></div>
-        <div class="flex items-center justify-between mb-2">
-          <div class="flex items-center gap-2">
-            <span class="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600">
-              <i data-lucide="waves" class="w-4 h-4"></i>
-            </span>
-            <span class="text-sm font-semibold text-slate-700 dark:text-slate-200">ระดับน้ำในถัง</span>
-          </div>
-          <div id="delta-water" class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-            ─ 0.0
-          </div>
-        </div>
-        <div class="flex items-baseline gap-1 my-1">
-          <span id="val-water" class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">--</span>
-          <span class="text-sm font-medium text-slate-500 dark:text-slate-400">%</span>
-        </div>
-        <div class="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500 pt-3 border-t border-slate-100 dark:border-slate-800/60">
-          <span class="font-mono">water_level</span>
-          <span id="stat-water">ต่ำสุด -- · สูงสุด --</span>
-        </div>
-      </div>
-
-      <!-- 8. สรุปความสมบูรณ์ของระบบ (System Health Card) -->
-      <div class="card-glass rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800/80 hover:shadow-lg transition-all relative overflow-hidden group flex flex-col justify-between">
-        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 to-teal-500"></div>
-        <div>
-          <div class="flex items-center justify-between mb-2">
-            <div class="flex items-center gap-2">
-              <span class="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600">
-                <i data-lucide="activity" class="w-4 h-4"></i>
-              </span>
-              <span class="text-sm font-semibold text-slate-700 dark:text-slate-200">สถานะโดยรวม</span>
+    <!-- TOP CYBER COMMAND HEADER -->
+    <header class="border-b border-slate-800/80 light:border-slate-200 bg-slate-950/70 light:bg-white/80 backdrop-blur-xl sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+        
+        <!-- Brand & System Title -->
+        <div class="flex items-center gap-3.5">
+          <div class="relative flex items-center justify-center">
+            <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 via-sky-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/25">
+              <i data-lucide="activity" class="w-6 h-6 text-white"></i>
             </div>
-            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300">
-              OPTIMAL
-            </span>
+            <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-slate-950 rounded-full status-ring"></span>
           </div>
-          <div class="text-lg font-bold text-slate-800 dark:text-white mt-1">
-            สภาพแวดล้อมสมบูรณ์
+          <div>
+            <div class="flex items-center gap-2.5">
+              <span class="text-xs font-black tracking-widest text-cyan-400 light:text-sky-600 uppercase font-mono">
+                TERRA-PULSE
+              </span>
+              <span class="px-2 py-0.5 rounded text-[11px] font-bold font-mono bg-cyan-950/80 light:bg-cyan-100 text-cyan-300 light:text-cyan-800 border border-cyan-800/60 light:border-cyan-300">
+                IOT-230
+              </span>
+              <span class="hidden sm:inline-block px-2 py-0.5 rounded text-[11px] font-medium bg-indigo-950/80 light:bg-indigo-100 text-indigo-300 light:text-indigo-800 border border-indigo-800/60 light:border-indigo-300">
+                L5 Architecture
+              </span>
+            </div>
+            <h1 class="text-base sm:text-lg font-bold text-slate-100 light:text-slate-900 tracking-tight">
+              ระบบศูนย์บัญชาการตรวจวัดสภาพแวดล้อมและฟาร์มอัจฉริยะแบบเรียลไทม์
+            </h1>
           </div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            ทุกเซนเซอร์ทำงานตามเกณฑ์ปกติ ส่งข้อมูล Realtime ทุก 10 วินาที
-          </p>
         </div>
-        <div class="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500 pt-3 border-t border-slate-100 dark:border-slate-800/60 mt-3">
-          <span>7 เซนเซอร์ + เวลา</span>
-          <span class="text-emerald-500 font-medium">100% เชื่อมต่อ</span>
+
+        <!-- Connection State & Quick Actions -->
+        <div class="flex items-center gap-2 sm:gap-3 ml-auto">
+          
+          <!-- Live Stream Pill -->
+          <div id="livePill" class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono font-medium bg-emerald-950/70 light:bg-emerald-100 text-emerald-400 light:text-emerald-800 border border-emerald-800/70 light:border-emerald-300 shadow-sm">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 status-ring"></span>
+            <span id="livePillText">LIVE STREAM</span>
+          </div>
+
+          <!-- Refresh Button -->
+          <button onclick="fetchLatestData(true)" title="รีเฟรชข้อมูลเดี๋ยวนี้" class="p-2 rounded-xl border border-slate-700/80 light:border-slate-300 hover:bg-slate-800 light:hover:bg-slate-100 text-slate-300 light:text-slate-700 transition-all">
+            <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+          </button>
+
+          <!-- Audio Alert Toggle -->
+          <button id="soundBtn" onclick="toggleSound()" title="เปิด/ปิด เสียงเตือน Realtime Chime" class="p-2 rounded-xl border border-slate-700/80 light:border-slate-300 hover:bg-slate-800 light:hover:bg-slate-100 text-slate-400 light:text-slate-500 transition-all">
+            <i data-lucide="volume-x" id="soundIcon" class="w-4 h-4"></i>
+          </button>
+
+          <!-- Dark/Light Theme Toggle -->
+          <button onclick="toggleTheme()" title="สลับธีม สว่าง / มืด" class="p-2 rounded-xl border border-slate-700/80 light:border-slate-300 hover:bg-slate-800 light:hover:bg-slate-100 text-slate-300 light:text-slate-700 transition-all">
+            <i data-lucide="sun" id="themeIcon" class="w-4 h-4"></i>
+          </button>
+
+        </div>
+
+      </div>
+    </header>
+
+    <!-- CONTENT BODY -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 flex-1 w-full">
+
+      <!-- HERO TELEMETRY STRIP (KPI & SYSTEM OVERVIEW) -->
+      <div class="glass-card rounded-2xl p-4 sm:p-5 border border-slate-800/80 light:border-slate-200">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
+          
+          <!-- KPI 1: Overall Condition -->
+          <div class="flex items-center gap-3 border-r border-slate-800/80 light:border-slate-200 pr-4">
+            <div class="p-3 rounded-xl bg-cyan-950/60 light:bg-cyan-50 text-cyan-400 light:text-cyan-600 border border-cyan-800/50 light:border-cyan-200">
+              <i data-lucide="shield-check" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">ดัชนีความเหมาะสมรวม</div>
+              <div class="text-base sm:text-lg font-bold text-slate-100 light:text-slate-900 flex items-center gap-1.5">
+                <span>96%</span>
+                <span class="text-xs px-1.5 py-0.2 rounded bg-emerald-950 text-emerald-400 border border-emerald-800/50 font-normal">Optimal</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- KPI 2: Active Node -->
+          <div class="flex items-center gap-3 border-r border-slate-800/80 light:border-slate-200 pr-4">
+            <div class="p-3 rounded-xl bg-indigo-950/60 light:bg-indigo-50 text-indigo-400 light:text-indigo-600 border border-indigo-800/50 light:border-indigo-200">
+              <i data-lucide="cpu" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">ฮาร์ดแวร์ & โหนด</div>
+              <div class="text-sm sm:text-base font-bold text-slate-100 light:text-slate-900 font-mono">
+                ESP32 DevKit V1
+              </div>
+              <div class="text-[11px] font-mono text-cyan-400">/lab/esp32</div>
+            </div>
+          </div>
+
+          <!-- KPI 3: Sync Interval -->
+          <div class="flex items-center gap-3 border-r border-slate-800/80 light:border-slate-200 pr-4">
+            <div class="p-3 rounded-xl bg-purple-950/60 light:bg-purple-50 text-purple-400 light:text-purple-600 border border-purple-800/50 light:border-purple-200">
+              <i data-lucide="refresh-cw" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">ความถี่รับ-ส่งข้อมูล</div>
+              <div class="text-sm sm:text-base font-bold text-slate-100 light:text-slate-900 font-mono">
+                10 วินาที / รอบ
+              </div>
+              <div class="text-[11px] text-slate-400">PUT latest + POST history</div>
+            </div>
+          </div>
+
+          <!-- KPI 4: Last Timestamp & Age Counter -->
+          <div class="flex items-center gap-3">
+            <div class="p-3 rounded-xl bg-emerald-950/60 light:bg-emerald-50 text-emerald-400 light:text-emerald-600 border border-emerald-800/50 light:border-emerald-200">
+              <i data-lucide="clock" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">เวลาเซิร์ฟเวอร์ล่าสุด</div>
+              <div id="liveClock" class="text-xs sm:text-sm font-bold text-slate-100 light:text-slate-900 font-mono">
+                --:--:--
+              </div>
+              <div class="text-[11px] text-slate-400">
+                อัปเดตเมื่อ <span id="ageSeconds" class="font-bold text-cyan-400">0 วินาที</span> ที่แล้ว
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 
-    </div>
+      <!-- SENSORS RADIAL MATRIX (7 CARDS + GAUGE METERS) -->
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <i data-lucide="layout-grid" class="w-4 h-4 text-cyan-400"></i>
+            <h2 class="text-sm font-bold tracking-wider uppercase text-slate-300 light:text-slate-700 font-mono">
+              REALTIME SENSOR TELEMETRY (7 CHANNELS)
+            </h2>
+          </div>
+          <span class="text-xs text-slate-400 font-mono">Auto-streaming via Firebase RTDB</span>
+        </div>
 
-    <!-- CHARTS SECTION -->
-    <div class="space-y-5">
-      <!-- Main Primary Chart: Temperature Realtime Trend -->
-      <div class="card-glass rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
-        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+          <!-- CARD 1: TEMPERATURE -->
+          <div class="glass-card rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between group">
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="text-xs font-semibold text-rose-400 flex items-center gap-1.5 uppercase tracking-wide">
+                  <i data-lucide="thermometer" class="w-3.5 h-3.5"></i>
+                  อุณหภูมิ (Air Temp)
+                </span>
+                <div class="flex items-baseline gap-1 mt-2">
+                  <span id="val-temp" class="text-3xl sm:text-4xl font-black font-mono text-slate-100 light:text-slate-900 tracking-tight">--</span>
+                  <span class="text-sm font-medium text-slate-400">°C</span>
+                </div>
+              </div>
+              <!-- Radial Mini Meter -->
+              <div class="relative w-14 h-14 flex items-center justify-center">
+                <svg class="w-14 h-14" viewBox="0 0 36 36">
+                  <path class="text-slate-800 light:text-slate-200 stroke-current" stroke-width="3.2" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                  <path id="ring-temp" class="gauge-circle text-rose-500 stroke-current" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="100, 100" stroke-dashoffset="65" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                </svg>
+                <div id="delta-temp" class="absolute text-[10px] font-bold font-mono text-rose-400">─ 0.0</div>
+              </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-800/80 light:border-slate-200/80 flex items-center justify-between text-xs text-slate-400">
+              <span class="px-2 py-0.5 rounded bg-rose-950/60 light:bg-rose-100 text-rose-300 light:text-rose-700 text-[11px] font-medium">เหมาะสม (24-35°C)</span>
+              <span id="stat-temp" class="font-mono text-[11px]">Min -- · Max --</span>
+            </div>
+          </div>
+
+          <!-- CARD 2: HUMIDITY -->
+          <div class="glass-card rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between group">
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="text-xs font-semibold text-sky-400 flex items-center gap-1.5 uppercase tracking-wide">
+                  <i data-lucide="droplets" class="w-3.5 h-3.5"></i>
+                  ความชื้นอากาศ (Humidity)
+                </span>
+                <div class="flex items-baseline gap-1 mt-2">
+                  <span id="val-humi" class="text-3xl sm:text-4xl font-black font-mono text-slate-100 light:text-slate-900 tracking-tight">--</span>
+                  <span class="text-sm font-medium text-slate-400">%</span>
+                </div>
+              </div>
+              <div class="relative w-14 h-14 flex items-center justify-center">
+                <svg class="w-14 h-14" viewBox="0 0 36 36">
+                  <path class="text-slate-800 light:text-slate-200 stroke-current" stroke-width="3.2" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                  <path id="ring-humi" class="gauge-circle text-sky-400 stroke-current" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="100, 100" stroke-dashoffset="40" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                </svg>
+                <div id="delta-humi" class="absolute text-[10px] font-bold font-mono text-sky-400">─ 0.0</div>
+              </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-800/80 light:border-slate-200/80 flex items-center justify-between text-xs text-slate-400">
+              <span class="px-2 py-0.5 rounded bg-sky-950/60 light:bg-sky-100 text-sky-300 light:text-sky-700 text-[11px] font-medium">ความชื้นปกติ</span>
+              <span id="stat-humi" class="font-mono text-[11px]">Min -- · Max --</span>
+            </div>
+          </div>
+
+          <!-- CARD 3: SOIL MOISTURE -->
+          <div class="glass-card rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between group">
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="text-xs font-semibold text-emerald-400 flex items-center gap-1.5 uppercase tracking-wide">
+                  <i data-lucide="sprout" class="w-3.5 h-3.5"></i>
+                  ความชื้นในดิน (Soil Moisture)
+                </span>
+                <div class="flex items-baseline gap-1 mt-2">
+                  <span id="val-soil" class="text-3xl sm:text-4xl font-black font-mono text-slate-100 light:text-slate-900 tracking-tight">--</span>
+                  <span class="text-sm font-medium text-slate-400">%</span>
+                </div>
+              </div>
+              <div class="relative w-14 h-14 flex items-center justify-center">
+                <svg class="w-14 h-14" viewBox="0 0 36 36">
+                  <path class="text-slate-800 light:text-slate-200 stroke-current" stroke-width="3.2" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                  <path id="ring-soil" class="gauge-circle text-emerald-400 stroke-current" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="100, 100" stroke-dashoffset="45" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                </svg>
+                <div id="delta-soil" class="absolute text-[10px] font-bold font-mono text-emerald-400">─ 0.0</div>
+              </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-800/80 light:border-slate-200/80 flex items-center justify-between text-xs text-slate-400">
+              <span class="px-2 py-0.5 rounded bg-emerald-950/60 light:bg-emerald-100 text-emerald-300 light:text-emerald-700 text-[11px] font-medium">ชุ่มชื้นพอดี</span>
+              <span id="stat-soil" class="font-mono text-[11px]">Min -- · Max --</span>
+            </div>
+          </div>
+
+          <!-- CARD 4: LIGHT INTENSITY -->
+          <div class="glass-card rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between group">
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="text-xs font-semibold text-amber-400 flex items-center gap-1.5 uppercase tracking-wide">
+                  <i data-lucide="sun" class="w-3.5 h-3.5"></i>
+                  ความเข้มแสง (Light)
+                </span>
+                <div class="flex items-baseline gap-1 mt-2">
+                  <span id="val-light" class="text-3xl sm:text-4xl font-black font-mono text-slate-100 light:text-slate-900 tracking-tight">--</span>
+                  <span class="text-sm font-medium text-slate-400">lx</span>
+                </div>
+              </div>
+              <div class="relative w-14 h-14 flex items-center justify-center">
+                <svg class="w-14 h-14" viewBox="0 0 36 36">
+                  <path class="text-slate-800 light:text-slate-200 stroke-current" stroke-width="3.2" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                  <path id="ring-light" class="gauge-circle text-amber-400 stroke-current" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="100, 100" stroke-dashoffset="50" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                </svg>
+                <div id="delta-light" class="absolute text-[10px] font-bold font-mono text-amber-400">─ 0</div>
+              </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-800/80 light:border-slate-200/80 flex items-center justify-between text-xs text-slate-400">
+              <span class="px-2 py-0.5 rounded bg-amber-950/60 light:bg-amber-100 text-amber-300 light:text-amber-700 text-[11px] font-medium">แสงพอเหมาะ</span>
+              <span id="stat-light" class="font-mono text-[11px]">Min -- · Max --</span>
+            </div>
+          </div>
+
+          <!-- CARD 5: CO2 CONCENTRATION -->
+          <div class="glass-card rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between group">
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="text-xs font-semibold text-purple-400 flex items-center gap-1.5 uppercase tracking-wide">
+                  <i data-lucide="wind" class="w-3.5 h-3.5"></i>
+                  ก๊าซ CO2 (Carbon Dioxide)
+                </span>
+                <div class="flex items-baseline gap-1 mt-2">
+                  <span id="val-co2" class="text-3xl sm:text-4xl font-black font-mono text-slate-100 light:text-slate-900 tracking-tight">--</span>
+                  <span class="text-sm font-medium text-slate-400">ppm</span>
+                </div>
+              </div>
+              <div class="relative w-14 h-14 flex items-center justify-center">
+                <svg class="w-14 h-14" viewBox="0 0 36 36">
+                  <path class="text-slate-800 light:text-slate-200 stroke-current" stroke-width="3.2" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                  <path id="ring-co2" class="gauge-circle text-purple-400 stroke-current" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="100, 100" stroke-dashoffset="40" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                </svg>
+                <div id="delta-co2" class="absolute text-[10px] font-bold font-mono text-purple-400">─ 0</div>
+              </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-800/80 light:border-slate-200/80 flex items-center justify-between text-xs text-slate-400">
+              <span class="px-2 py-0.5 rounded bg-purple-950/60 light:bg-purple-100 text-purple-300 light:text-purple-700 text-[11px] font-medium">อากาศบริสุทธิ์</span>
+              <span id="stat-co2" class="font-mono text-[11px]">Min -- · Max --</span>
+            </div>
+          </div>
+
+          <!-- CARD 6: PM2.5 PARTICLES -->
+          <div class="glass-card rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between group">
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="text-xs font-semibold text-teal-400 flex items-center gap-1.5 uppercase tracking-wide">
+                  <i data-lucide="cloud-fog" class="w-3.5 h-3.5"></i>
+                  ฝุ่นละออง PM2.5
+                </span>
+                <div class="flex items-baseline gap-1 mt-2">
+                  <span id="val-pm25" class="text-3xl sm:text-4xl font-black font-mono text-slate-100 light:text-slate-900 tracking-tight">--</span>
+                  <span class="text-sm font-medium text-slate-400">µg/m³</span>
+                </div>
+              </div>
+              <div class="relative w-14 h-14 flex items-center justify-center">
+                <svg class="w-14 h-14" viewBox="0 0 36 36">
+                  <path class="text-slate-800 light:text-slate-200 stroke-current" stroke-width="3.2" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                  <path id="ring-pm25" class="gauge-circle text-teal-400 stroke-current" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="100, 100" stroke-dashoffset="60" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                </svg>
+                <div id="delta-pm25" class="absolute text-[10px] font-bold font-mono text-teal-400">─ 0.0</div>
+              </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-800/80 light:border-slate-200/80 flex items-center justify-between text-xs text-slate-400">
+              <span class="px-2 py-0.5 rounded bg-teal-950/60 light:bg-teal-100 text-teal-300 light:text-teal-700 text-[11px] font-medium">คุณภาพดีมาก (Good)</span>
+              <span id="stat-pm25" class="font-mono text-[11px]">Min -- · Max --</span>
+            </div>
+          </div>
+
+          <!-- CARD 7: WATER RESERVOIR LEVEL -->
+          <div class="glass-card rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between group">
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="text-xs font-semibold text-blue-400 flex items-center gap-1.5 uppercase tracking-wide">
+                  <i data-lucide="waves" class="w-3.5 h-3.5"></i>
+                  ระดับน้ำในถังสำรอง
+                </span>
+                <div class="flex items-baseline gap-1 mt-2">
+                  <span id="val-water" class="text-3xl sm:text-4xl font-black font-mono text-slate-100 light:text-slate-900 tracking-tight">--</span>
+                  <span class="text-sm font-medium text-slate-400">%</span>
+                </div>
+              </div>
+              <div class="relative w-14 h-14 flex items-center justify-center">
+                <svg class="w-14 h-14" viewBox="0 0 36 36">
+                  <path class="text-slate-800 light:text-slate-200 stroke-current" stroke-width="3.2" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                  <path id="ring-water" class="gauge-circle text-blue-400 stroke-current" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="100, 100" stroke-dashoffset="30" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                </svg>
+                <div id="delta-water" class="absolute text-[10px] font-bold font-mono text-blue-400">─ 0.0</div>
+              </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-800/80 light:border-slate-200/80 flex items-center justify-between text-xs text-slate-400">
+              <span class="px-2 py-0.5 rounded bg-blue-950/60 light:bg-blue-100 text-blue-300 light:text-blue-700 text-[11px] font-medium">น้ำเพียงพอ</span>
+              <span id="stat-water" class="font-mono text-[11px]">Min -- · Max --</span>
+            </div>
+          </div>
+
+          <!-- CARD 8: AUTOMATION COMMAND HUB (CREATIVE & PRACTICAL FEATURE) -->
+          <div class="glass-card rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between border-cyan-800/40 bg-gradient-to-br from-cyan-950/30 to-indigo-950/30">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold text-cyan-400 flex items-center gap-1.5 uppercase tracking-wide">
+                  <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
+                  ระบบควบคุมอัจฉริยะ (Edge Logic)
+                </span>
+                <span class="w-2 h-2 rounded-full bg-cyan-400 status-ring"></span>
+              </div>
+              <div class="space-y-2 text-xs">
+                <div class="flex items-center justify-between p-1.5 rounded-lg bg-slate-900/60 light:bg-slate-100 border border-slate-800/80 light:border-slate-200">
+                  <span class="text-slate-300 light:text-slate-700 flex items-center gap-1.5">
+                    <i data-lucide="droplet" class="w-3.5 h-3.5 text-sky-400"></i> ปั๊มน้ำดิน
+                  </span>
+                  <span id="actuator-pump" class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-emerald-950 text-emerald-400 border border-emerald-800/50">AUTO: STANDBY</span>
+                </div>
+                <div class="flex items-center justify-between p-1.5 rounded-lg bg-slate-900/60 light:bg-slate-100 border border-slate-800/80 light:border-slate-200">
+                  <span class="text-slate-300 light:text-slate-700 flex items-center gap-1.5">
+                    <i data-lucide="fan" class="w-3.5 h-3.5 text-purple-400"></i> พัดลมระบาย
+                  </span>
+                  <span id="actuator-fan" class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-indigo-950 text-indigo-400 border border-indigo-800/50">AUTO: NORMAL</span>
+                </div>
+              </div>
+            </div>
+            <div class="mt-3 pt-2 border-t border-slate-800/80 light:border-slate-200/80 text-[11px] text-slate-400 flex items-center justify-between">
+              <span>สั่งการอัตโนมัติ</span>
+              <span class="text-cyan-400 font-mono">Feedback Loop</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- MASTER MULTI-SERIES TELEMETRY CHART SECTION -->
+      <div class="glass-card rounded-2xl p-5 sm:p-6 border border-slate-800/80 light:border-slate-200">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
           <div>
             <div class="flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-              <h2 class="text-lg font-bold text-slate-800 dark:text-white">อุณหภูมิ (Temperature)</h2>
+              <span class="p-1.5 rounded-lg bg-cyan-950 text-cyan-400 border border-cyan-800">
+                <i data-lucide="line-chart" class="w-4 h-4"></i>
+              </span>
+              <h2 class="text-base sm:text-lg font-bold text-slate-100 light:text-slate-900">
+                กราฟอนุกรมเวลาเรียลไทม์ (Master Multi-Channel Telemetry)
+              </h2>
             </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400">
-              ข้อมูลสะสมแบบ Realtime จาก Firebase RTDB (/history & /latest)
+            <p class="text-xs text-slate-400 mt-0.5">
+              ดึงข้อมูลประวัติจาก <span class="font-mono text-cyan-400">/history</span> ร่วมกับ <span class="font-mono text-cyan-400">/latest</span> (คลิกชิปด้านล่างเพื่อเปิด/ปิดเส้นกราฟ)
             </p>
           </div>
-          <div class="flex items-center gap-2">
-            <span id="badge-chart-temp" class="text-xs font-bold px-3 py-1 rounded-full bg-rose-50 text-rose-600 dark:bg-rose-950/70 dark:text-rose-300 border border-rose-200 dark:border-rose-900">
-              -- °C
-            </span>
+
+          <!-- Channel Filter Pills -->
+          <div class="flex flex-wrap items-center gap-1.5 text-xs font-mono">
+            <button onclick="toggleDataset(0)" id="pill-0" class="px-2.5 py-1 rounded-lg border border-rose-500/60 bg-rose-950/40 text-rose-300 font-semibold transition-all">Temp</button>
+            <button onclick="toggleDataset(1)" id="pill-1" class="px-2.5 py-1 rounded-lg border border-sky-500/60 bg-sky-950/40 text-sky-300 font-semibold transition-all">Humi</button>
+            <button onclick="toggleDataset(2)" id="pill-2" class="px-2.5 py-1 rounded-lg border border-emerald-500/60 bg-emerald-950/40 text-emerald-300 font-semibold transition-all">Soil</button>
+            <button onclick="toggleDataset(3)" id="pill-3" class="px-2.5 py-1 rounded-lg border border-amber-500/60 bg-amber-950/40 text-amber-300 font-semibold transition-all">Light (÷10)</button>
+            <button onclick="toggleDataset(4)" id="pill-4" class="px-2.5 py-1 rounded-lg border border-purple-500/60 bg-purple-950/40 text-purple-300 font-semibold transition-all">CO2 (÷10)</button>
+            <button onclick="toggleDataset(5)" id="pill-5" class="px-2.5 py-1 rounded-lg border border-teal-500/60 bg-teal-950/40 text-teal-300 font-semibold transition-all">PM2.5</button>
+            <button onclick="toggleDataset(6)" id="pill-6" class="px-2.5 py-1 rounded-lg border border-blue-500/60 bg-blue-950/40 text-blue-300 font-semibold transition-all">Water</button>
           </div>
         </div>
-        <div class="h-64 sm:h-72 w-full">
-          <canvas id="tempChart"></canvas>
+
+        <!-- Canvas -->
+        <div class="h-72 sm:h-80 w-full">
+          <canvas id="masterChart"></canvas>
         </div>
       </div>
 
-      <!-- Secondary Dual Charts Grid -->
+      <!-- DUAL SUB-CHARTS (MICROCLIMATE & WATER/ENVIRONMENT) -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <!-- Humidity Chart -->
-        <div class="card-glass rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
+        
+        <!-- Sub-Chart 1: Microclimate (Temp vs Humidity with Dual Y-Axis) -->
+        <div class="glass-card rounded-2xl p-5 border border-slate-800/80 light:border-slate-200">
           <div class="flex items-center justify-between mb-3">
             <div>
-              <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
-                <h3 class="text-base font-bold text-slate-800 dark:text-white">ความชื้นสัมพัทธ์ (Humidity)</h3>
-              </div>
-              <p class="text-xs text-slate-500 dark:text-slate-400">ประวัติค่าความชื้นในอากาศ (%)</p>
+              <h3 class="text-sm font-bold text-slate-100 light:text-slate-900 flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                สภาวะบรรยากาศ (Microclimate: Temp & Humidity)
+              </h3>
+              <p class="text-xs text-slate-400">เปรียบเทียบความสัมพันธ์ระหว่างอุณหภูมิกับความชื้น</p>
             </div>
-            <span id="badge-chart-humi" class="text-xs font-bold px-3 py-1 rounded-full bg-sky-50 text-sky-600 dark:bg-sky-950/70 dark:text-sky-300 border border-sky-200 dark:border-sky-900">
-              -- %
-            </span>
           </div>
           <div class="h-56 w-full">
-            <canvas id="humiChart"></canvas>
+            <canvas id="microclimateChart"></canvas>
           </div>
         </div>
 
-        <!-- Light Intensity Chart -->
-        <div class="card-glass rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
+        <!-- Sub-Chart 2: Soil Moisture & Water Supply -->
+        <div class="glass-card rounded-2xl p-5 border border-slate-800/80 light:border-slate-200">
           <div class="flex items-center justify-between mb-3">
             <div>
-              <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                <h3 class="text-base font-bold text-slate-800 dark:text-white">ความเข้มแสง (Light Intensity)</h3>
-              </div>
-              <p class="text-xs text-slate-500 dark:text-slate-400">ประวัติความเข้มแสงแดด (lx)</p>
-            </div>
-            <span id="badge-chart-light" class="text-xs font-bold px-3 py-1 rounded-full bg-amber-50 text-amber-600 dark:bg-amber-950/70 dark:text-amber-300 border border-amber-200 dark:border-amber-900">
-              -- lx
-            </span>
-          </div>
-          <div class="h-56 w-full">
-            <canvas id="lightChart"></canvas>
-          </div>
-        </div>
-
-        <!-- Soil Moisture & Water Tank Chart -->
-        <div class="card-glass rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
-          <div class="flex items-center justify-between mb-3">
-            <div>
-              <div class="flex items-center gap-2">
+              <h3 class="text-sm font-bold text-slate-100 light:text-slate-900 flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                <h3 class="text-base font-bold text-slate-800 dark:text-white">ความชื้นดิน & ระดับน้ำสำรอง</h3>
-              </div>
-              <p class="text-xs text-slate-500 dark:text-slate-400">ดิน (Soil Moisture %) และ ถังน้ำ (Water %)</p>
+                ทรัพยากรน้ำและดิน (Hydrology: Soil & Water Tank)
+              </h3>
+              <p class="text-xs text-slate-400">การใช้น้ำและความชื้นในแปลงเพาะปลูก</p>
             </div>
-            <span id="badge-chart-soil" class="text-xs font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 dark:bg-emerald-950/70 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900">
-              -- %
-            </span>
           </div>
           <div class="h-56 w-full">
-            <canvas id="soilWaterChart"></canvas>
+            <canvas id="hydrologyChart"></canvas>
           </div>
         </div>
 
-        <!-- Air Quality: CO2 & PM2.5 Chart -->
-        <div class="card-glass rounded-2xl p-5 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
-          <div class="flex items-center justify-between mb-3">
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
-                <h3 class="text-base font-bold text-slate-800 dark:text-white">คุณภาพอากาศ (CO2 & PM2.5)</h3>
-              </div>
-              <p class="text-xs text-slate-500 dark:text-slate-400">CO2 (ppm) และ ฝุ่นละออง PM2.5 (µg/m³)</p>
-            </div>
-            <span id="badge-chart-air" class="text-xs font-bold px-3 py-1 rounded-full bg-purple-50 text-purple-600 dark:bg-purple-950/70 dark:text-purple-300 border border-purple-200 dark:border-purple-900">
-              -- ppm
-            </span>
-          </div>
-          <div class="h-56 w-full">
-            <canvas id="airChart"></canvas>
-          </div>
-        </div>
       </div>
-    </div>
 
-    <!-- RECENT HISTORY DATA TABLE -->
-    <div class="card-glass rounded-2xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
-      <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
-        <div>
+      <!-- LIVE TELEMETRY LOG TABLE (RECENT HISTORY) -->
+      <div class="glass-card rounded-2xl p-5 sm:p-6 border border-slate-800/80 light:border-slate-200">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="p-1.5 rounded-lg bg-indigo-950 text-indigo-400 border border-indigo-800">
+                <i data-lucide="database" class="w-4 h-4"></i>
+              </span>
+              <h2 class="text-base sm:text-lg font-bold text-slate-100 light:text-slate-900">
+                ตารางบันทึกข้อมูลย้อนหลัง (Firebase Realtime History Log)
+              </h2>
+            </div>
+            <p class="text-xs text-slate-400 mt-0.5">
+              ข้อมูล 15 รายการล่าสุดจาก <span class="font-mono text-cyan-400">/lab/esp32/history</span> มีการต่อเวลาด้วย Unix Timestamp จาก SNTP
+            </p>
+          </div>
+
+          <!-- Actions -->
           <div class="flex items-center gap-2">
-            <i data-lucide="table" class="w-5 h-5 text-sky-500"></i>
-            <h2 class="text-lg font-bold text-slate-800 dark:text-white">ตารางประวัติข้อมูลย้อนหลัง (History Log)</h2>
+            <button onclick="exportCSV()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-800 light:bg-slate-100 hover:bg-slate-700 light:hover:bg-slate-200 text-slate-200 light:text-slate-800 border border-slate-700 light:border-slate-300 transition-all">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              <span>Export CSV</span>
+            </button>
           </div>
-          <p class="text-xs text-slate-500 dark:text-slate-400">
-            แสดงข้อมูล 15 รายการล่าสุดจาก Firebase Realtime Database (/lab/esp32/history)
-          </p>
         </div>
-        <div class="flex items-center gap-2">
-          <button onclick="exportToCSV()" class="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium rounded-xl bg-sky-50 text-sky-700 hover:bg-sky-100 dark:bg-sky-950 dark:text-sky-300 dark:hover:bg-sky-900 border border-sky-200 dark:border-sky-800 transition-all">
-            <i data-lucide="download" class="w-3.5 h-3.5"></i>
-            <span>Export CSV</span>
-          </button>
+
+        <!-- Table Container -->
+        <div class="overflow-x-auto rounded-xl border border-slate-800/80 light:border-slate-200">
+          <table class="w-full text-left text-xs font-mono">
+            <thead class="bg-slate-900/80 light:bg-slate-100 text-slate-400 light:text-slate-600 font-semibold border-b border-slate-800 light:border-slate-200">
+              <tr>
+                <th class="py-3 px-4">วัน-เวลา (Timestamp)</th>
+                <th class="py-3 px-3 text-rose-400">Temp (°C)</th>
+                <th class="py-3 px-3 text-sky-400">Humi (%)</th>
+                <th class="py-3 px-3 text-emerald-400">Soil (%)</th>
+                <th class="py-3 px-3 text-amber-400">Light (lx)</th>
+                <th class="py-3 px-3 text-purple-400">CO2 (ppm)</th>
+                <th class="py-3 px-3 text-teal-400">PM2.5 (µg/m³)</th>
+                <th class="py-3 px-3 text-blue-400">Water (%)</th>
+                <th class="py-3 px-4 text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody id="historyTbody" class="divide-y divide-slate-800/60 light:divide-slate-200 text-slate-300 light:text-slate-700">
+              <tr>
+                <td colspan="9" class="py-6 text-center text-slate-500 font-sans">กำลังดึงข้อมูลจาก Firebase...</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <!-- Table Container -->
-      <div class="overflow-x-auto custom-scrollbar rounded-xl border border-slate-200/80 dark:border-slate-800/80">
-        <table class="w-full text-left text-xs sm:text-sm">
-          <thead class="bg-slate-50/80 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-slate-800">
-            <tr>
-              <th class="py-3 px-4">วัน-เวลา (Timestamp)</th>
-              <th class="py-3 px-3">อุณหภูมิ (°C)</th>
-              <th class="py-3 px-3">ความชื้น (%)</th>
-              <th class="py-3 px-3">ความชื้นดิน (%)</th>
-              <th class="py-3 px-3">แสง (lx)</th>
-              <th class="py-3 px-3">CO2 (ppm)</th>
-              <th class="py-3 px-3">PM2.5 (µg/m³)</th>
-              <th class="py-3 px-3">ระดับน้ำ (%)</th>
-              <th class="py-3 px-4 text-center">สถานะ</th>
-            </tr>
-          </thead>
-          <tbody id="historyTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/60 font-mono text-slate-700 dark:text-slate-300">
-            <tr>
-              <td colspan="9" class="py-6 text-center text-slate-400">กำลังโหลดข้อมูลประวัติ...</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    </main>
 
-    <!-- SYSTEM ARCHITECTURE & CREDITS FOOTER -->
-    <footer class="text-center text-xs text-slate-400 dark:text-slate-500 pt-6 pb-2 space-y-1">
-      <p>
-        โครงงานระบบ IoT เชื่อมต่อ ESP32 DevKit V1 + ESPHome + Firebase Realtime Database + GitHub Pages
-      </p>
-      <p>
-        Database: <span class="font-mono text-sky-600 dark:text-sky-400">iot-230-default-rtdb.asia-southeast1.firebasedatabase.app</span>
-      </p>
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800/80 light:border-slate-200 bg-slate-950/60 light:bg-white/60 py-5 text-center text-xs text-slate-500">
+      <div class="max-w-7xl mx-auto px-4 space-y-1">
+        <p>
+          <span class="font-bold text-slate-300 light:text-slate-700">IoT-230 Smart Environmental Station</span> — พัฒนาด้วย ESP32, ESPHome, Firebase Realtime Database และ GitHub Pages
+        </p>
+        <p class="font-mono text-[11px] text-cyan-400/80">
+          Database Endpoint: https://iot-230-default-rtdb.asia-southeast1.firebasedatabase.app/
+        </p>
+      </div>
     </footer>
 
-  </main>
+  </div>
 
-  <!-- JAVASCRIPT LOGIC -->
+  <!-- JAVASCRIPT CORE LOGIC -->
   <script>
     // Configuration
-    const FIREBASE_BASE_URL = "https://iot-230-default-rtdb.asia-southeast1.firebasedatabase.app";
-    const LATEST_ENDPOINT = `${FIREBASE_BASE_URL}/lab/esp32/latest.json`;
-    const HISTORY_ENDPOINT = `${FIREBASE_BASE_URL}/lab/esp32/history.json?orderBy="$key"&limitToLast=20`;
+    const RTDB_URL = "https://iot-230-default-rtdb.asia-southeast1.firebasedatabase.app";
+    const LATEST_URL = `${RTDB_URL}/lab/esp32/latest.json`;
+    const HISTORY_URL = `${RTDB_URL}/lab/esp32/history.json?orderBy="$key"&limitToLast=20`;
 
-    // State Variables
-    let soundEnabled = false;
-    let lastTimestamp = 0;
-    let secondsSinceLastUpdate = 0;
-    let previousValues = {};
+    // Global State
+    let audioOn = false;
+    let lastTs = 0;
+    let secondsAgo = 0;
+    let prevData = {};
     const stats = {
       temp: { min: Infinity, max: -Infinity },
       humi: { min: Infinity, max: -Infinity },
@@ -554,35 +667,35 @@
       light: { min: Infinity, max: -Infinity },
       co2: { min: Infinity, max: -Infinity },
       pm25: { min: Infinity, max: -Infinity },
-      water: { min: Infinity, max: -Infinity }
+      water: { min: Infinity, max: -Infinity },
     };
     let historyRecords = [];
+    let masterChart, microclimateChart, hydrologyChart;
+    const timeLabels = [];
 
-    // Audio Chime (Synthesizer via Web Audio API)
+    // Synthesizer Audio Chime
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playBeep() {
-      if (!soundEnabled) return;
+      if (!audioOn) return;
       try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = "sine";
-        osc.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
-        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+        osc.frequency.setValueAtTime(1046.5, audioCtx.currentTime); // C6 Note
+        gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
         osc.start();
-        osc.stop(audioCtx.currentTime + 0.3);
-      } catch (e) {
-        console.error("Audio error:", e);
-      }
+        osc.stop(audioCtx.currentTime + 0.25);
+      } catch (e) {}
     }
 
     function toggleSound() {
-      soundEnabled = !soundEnabled;
+      audioOn = !audioOn;
       const icon = document.getElementById("soundIcon");
-      if (soundEnabled) {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
+      if (audioOn) {
         icon.setAttribute("data-lucide", "volume-2");
         playBeep();
       } else {
@@ -591,286 +704,182 @@
       lucide.createIcons();
     }
 
-    // Dark Mode Toggle
-    function toggleDarkMode() {
+    // Theme Switch
+    function toggleTheme() {
       const isDark = document.documentElement.classList.toggle('dark');
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      document.documentElement.classList.toggle('light', !isDark);
+      localStorage.setItem('terra_theme', isDark ? 'dark' : 'light');
       updateThemeIcon(isDark);
-      updateChartColors(isDark);
+      refreshChartTheme(isDark);
     }
 
     function updateThemeIcon(isDark) {
-      const themeIcon = document.getElementById("themeIcon");
+      const icon = document.getElementById("themeIcon");
       if (isDark) {
-        themeIcon.setAttribute("data-lucide", "sun");
+        icon.setAttribute("data-lucide", "sun");
       } else {
-        themeIcon.setAttribute("data-lucide", "moon");
+        icon.setAttribute("data-lucide", "moon");
       }
       lucide.createIcons();
     }
 
-    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark');
-      updateThemeIcon(true);
+    // Time Formatters
+    function formatTime(ts) {
+      if (!ts) return "--:--:--";
+      const d = new Date(ts * 1000);
+      return d.toLocaleTimeString('th-TH', { hour12: false });
     }
 
-    // Chart.js Setup
-    const chartTimeLabels = [];
-    let tempChart, humiChart, lightChart, soilWaterChart, airChart;
+    function formatDateTime(ts) {
+      if (!ts) return "--/--/---- --:--:--";
+      const d = new Date(ts * 1000);
+      const yearBE = d.getFullYear() + 543;
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      return `${day}/${month}/${yearBE} ${d.toLocaleTimeString('th-TH', { hour12: false })}`;
+    }
 
+    // Initialize Charts
     function initCharts() {
       const isDark = document.documentElement.classList.contains('dark');
-      const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+      const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.06)';
       const textColor = isDark ? '#94a3b8' : '#64748b';
 
       const commonOptions = {
         responsive: true,
         maintainAspectRatio: false,
-        animation: { duration: 400 },
+        animation: { duration: 350 },
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: isDark ? '#1e293b' : '#0f172a',
-            titleColor: '#fff',
-            bodyColor: '#e2e8f0',
+            backgroundColor: isDark ? '#0f172a' : '#ffffff',
+            titleColor: isDark ? '#ffffff' : '#0f172a',
+            bodyColor: isDark ? '#cbd5e1' : '#334155',
+            borderColor: isDark ? '#334155' : '#e2e8f0',
+            borderWidth: 1,
+            padding: 10,
             cornerRadius: 8,
-            padding: 10
+            titleFont: { family: 'JetBrains Mono' },
+            bodyFont: { family: 'Prompt' }
           }
         },
         scales: {
           x: {
             grid: { color: gridColor },
-            ticks: { color: textColor, font: { family: 'Inter', size: 10 } }
+            ticks: { color: textColor, font: { family: 'JetBrains Mono', size: 10 } }
           },
           y: {
             grid: { color: gridColor },
-            ticks: { color: textColor, font: { family: 'Inter', size: 10 } }
+            ticks: { color: textColor, font: { family: 'JetBrains Mono', size: 10 } }
           }
         }
       };
 
-      // 1. Temperature Chart
-      const ctxTemp = document.getElementById('tempChart').getContext('2d');
-      const gradTemp = ctxTemp.createLinearGradient(0, 0, 0, 260);
-      gradTemp.addColorStop(0, 'rgba(244, 63, 94, 0.28)');
-      gradTemp.addColorStop(1, 'rgba(244, 63, 94, 0.0)');
-
-      tempChart = new Chart(ctxTemp, {
+      // 1. MASTER MULTI-SERIES CHART
+      const ctxMaster = document.getElementById('masterChart').getContext('2d');
+      masterChart = new Chart(ctxMaster, {
         type: 'line',
         data: {
-          labels: chartTimeLabels,
-          datasets: [{
-            label: 'อุณหภูมิ (°C)',
-            data: [],
-            borderColor: '#f43f5e',
-            backgroundColor: gradTemp,
-            borderWidth: 2.5,
-            tension: 0.4,
-            fill: true,
-            pointRadius: 3,
-            pointBackgroundColor: '#f43f5e'
-          }]
-        },
-        options: commonOptions
-      });
-
-      // 2. Humidity Chart
-      const ctxHumi = document.getElementById('humiChart').getContext('2d');
-      const gradHumi = ctxHumi.createLinearGradient(0, 0, 0, 220);
-      gradHumi.addColorStop(0, 'rgba(14, 165, 233, 0.25)');
-      gradHumi.addColorStop(1, 'rgba(14, 165, 233, 0.0)');
-
-      humiChart = new Chart(ctxHumi, {
-        type: 'line',
-        data: {
-          labels: chartTimeLabels,
-          datasets: [{
-            label: 'ความชื้น (%)',
-            data: [],
-            borderColor: '#0ea5e9',
-            backgroundColor: gradHumi,
-            borderWidth: 2,
-            tension: 0.4,
-            fill: true,
-            pointRadius: 2.5,
-            pointBackgroundColor: '#0ea5e9'
-          }]
-        },
-        options: commonOptions
-      });
-
-      // 3. Light Intensity Chart
-      const ctxLight = document.getElementById('lightChart').getContext('2d');
-      const gradLight = ctxLight.createLinearGradient(0, 0, 0, 220);
-      gradLight.addColorStop(0, 'rgba(245, 158, 11, 0.25)');
-      gradLight.addColorStop(1, 'rgba(245, 158, 11, 0.0)');
-
-      lightChart = new Chart(ctxLight, {
-        type: 'line',
-        data: {
-          labels: chartTimeLabels,
-          datasets: [{
-            label: 'ความเข้มแสง (lx)',
-            data: [],
-            borderColor: '#f59e0b',
-            backgroundColor: gradLight,
-            borderWidth: 2,
-            tension: 0.4,
-            fill: true,
-            pointRadius: 2.5,
-            pointBackgroundColor: '#f59e0b'
-          }]
-        },
-        options: commonOptions
-      });
-
-      // 4. Soil & Water Chart
-      const ctxSoilWater = document.getElementById('soilWaterChart').getContext('2d');
-      soilWaterChart = new Chart(ctxSoilWater, {
-        type: 'line',
-        data: {
-          labels: chartTimeLabels,
+          labels: timeLabels,
           datasets: [
-            {
-              label: 'ความชื้นดิน (%)',
-              data: [],
-              borderColor: '#10b981',
-              backgroundColor: 'rgba(16, 185, 129, 0.1)',
-              borderWidth: 2,
-              tension: 0.4,
-              fill: true,
-              pointRadius: 2.5
-            },
-            {
-              label: 'ระดับน้ำ (%)',
-              data: [],
-              borderColor: '#6366f1',
-              backgroundColor: 'rgba(99, 102, 241, 0.08)',
-              borderWidth: 2,
-              tension: 0.4,
-              fill: true,
-              pointRadius: 2.5
-            }
+            { label: 'Temp (°C)', data: [], borderColor: '#f43f5e', borderWidth: 2, tension: 0.35, pointRadius: 2.5 },
+            { label: 'Humi (%)', data: [], borderColor: '#38bdf8', borderWidth: 2, tension: 0.35, pointRadius: 2.5 },
+            { label: 'Soil (%)', data: [], borderColor: '#10b981', borderWidth: 2, tension: 0.35, pointRadius: 2.5 },
+            { label: 'Light (÷10 lx)', data: [], borderColor: '#f59e0b', borderWidth: 2, tension: 0.35, pointRadius: 2.5 },
+            { label: 'CO2 (÷10 ppm)', data: [], borderColor: '#8b5cf6', borderWidth: 2, tension: 0.35, pointRadius: 2.5 },
+            { label: 'PM2.5 (µg/m³)', data: [], borderColor: '#14b8a6', borderWidth: 2, tension: 0.35, pointRadius: 2.5 },
+            { label: 'Water (%)', data: [], borderColor: '#6366f1', borderWidth: 2, tension: 0.35, pointRadius: 2.5 }
+          ]
+        },
+        options: commonOptions
+      });
+
+      // 2. MICROCLIMATE CHART (Dual Axis)
+      const ctxMicro = document.getElementById('microclimateChart').getContext('2d');
+      microclimateChart = new Chart(ctxMicro, {
+        type: 'line',
+        data: {
+          labels: timeLabels,
+          datasets: [
+            { label: 'อุณหภูมิ (°C)', data: [], borderColor: '#f43f5e', backgroundColor: 'rgba(244, 63, 94, 0.1)', fill: true, borderWidth: 2, tension: 0.4, yAxisID: 'y' },
+            { label: 'ความชื้น (%)', data: [], borderColor: '#38bdf8', backgroundColor: 'rgba(56, 189, 248, 0.08)', fill: true, borderWidth: 2, tension: 0.4, yAxisID: 'y1' }
           ]
         },
         options: {
           ...commonOptions,
-          plugins: {
-            ...commonOptions.plugins,
-            legend: {
-              display: true,
-              labels: { color: textColor, font: { family: 'Sarabun', size: 11 } }
-            }
-          }
-        }
-      });
-
-      // 5. Air Quality Chart (CO2 & PM2.5)
-      const ctxAir = document.getElementById('airChart').getContext('2d');
-      airChart = new Chart(ctxAir, {
-        type: 'line',
-        data: {
-          labels: chartTimeLabels,
-          datasets: [
-            {
-              label: 'CO2 (ppm)',
-              data: [],
-              borderColor: '#8b5cf6',
-              borderWidth: 2,
-              tension: 0.4,
-              pointRadius: 2.5,
-              yAxisID: 'y'
-            },
-            {
-              label: 'PM2.5 (µg/m³)',
-              data: [],
-              borderColor: '#14b8a6',
-              borderWidth: 2,
-              tension: 0.4,
-              pointRadius: 2.5,
-              yAxisID: 'y1'
-            }
-          ]
-        },
-        options: {
-          ...commonOptions,
-          plugins: {
-            ...commonOptions.plugins,
-            legend: {
-              display: true,
-              labels: { color: textColor, font: { family: 'Sarabun', size: 11 } }
-            }
-          },
           scales: {
             x: commonOptions.scales.x,
-            y: {
-              type: 'linear',
-              display: true,
-              position: 'left',
-              grid: { color: gridColor },
-              ticks: { color: '#8b5cf6', font: { family: 'Inter', size: 10 } }
-            },
-            y1: {
-              type: 'linear',
-              display: true,
-              position: 'right',
-              grid: { drawOnChartArea: false },
-              ticks: { color: '#14b8a6', font: { family: 'Inter', size: 10 } }
-            }
+            y: { ...commonOptions.scales.y, position: 'left', ticks: { color: '#f43f5e' } },
+            y1: { ...commonOptions.scales.y, position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#38bdf8' } }
           }
         }
       });
-    }
 
-    function updateChartColors(isDark) {
-      const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
-      const textColor = isDark ? '#94a3b8' : '#64748b';
-      [tempChart, humiChart, lightChart, soilWaterChart, airChart].forEach(chart => {
-        if (!chart) return;
-        chart.options.scales.x.grid.color = gridColor;
-        chart.options.scales.x.ticks.color = textColor;
-        if (chart.options.scales.y) {
-          chart.options.scales.y.grid.color = gridColor;
-        }
-        chart.update();
+      // 3. HYDROLOGY CHART
+      const ctxHydro = document.getElementById('hydrologyChart').getContext('2d');
+      hydrologyChart = new Chart(ctxHydro, {
+        type: 'line',
+        data: {
+          labels: timeLabels,
+          datasets: [
+            { label: 'ความชื้นดิน (%)', data: [], borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, borderWidth: 2, tension: 0.4 },
+            { label: 'ระดับน้ำสำรอง (%)', data: [], borderColor: '#6366f1', backgroundColor: 'rgba(99, 102, 241, 0.1)', fill: true, borderWidth: 2, tension: 0.4 }
+          ]
+        },
+        options: commonOptions
       });
     }
 
-    // Time Formatting Utility
-    function formatTime(timestamp) {
-      if (!timestamp) return "--:--:--";
-      const d = new Date(timestamp * 1000);
-      return d.toLocaleTimeString('th-TH', { hour12: false });
+    function refreshChartTheme(isDark) {
+      const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.06)';
+      const textColor = isDark ? '#94a3b8' : '#64748b';
+      [masterChart, microclimateChart, hydrologyChart].forEach(c => {
+        if (!c) return;
+        c.options.scales.x.grid.color = gridColor;
+        c.options.scales.x.ticks.color = textColor;
+        c.options.scales.y.grid.color = gridColor;
+        c.options.scales.y.ticks.color = textColor;
+        c.update();
+      });
     }
 
-    function formatDateTime(timestamp) {
-      if (!timestamp) return "--/--/---- --:--:--";
-      const d = new Date(timestamp * 1000);
-      const yearBE = d.getFullYear() + 543;
-      const day = String(d.getDate()).padStart(2, '0');
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const time = d.toLocaleTimeString('th-TH', { hour12: false });
-      return `${day}/${month}/${yearBE} ${time}`;
-    }
-
-    // Delta Trend Calculation
-    function updateDelta(elementId, current, previous, decimals = 1) {
-      const el = document.getElementById(elementId);
-      if (!el || previous === undefined || current === undefined) return;
-      const diff = current - previous;
-      if (Math.abs(diff) < 0.01) {
-        el.className = "text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500";
-        el.textContent = `─ 0.0`;
-      } else if (diff > 0) {
-        el.className = "text-xs font-semibold px-2 py-0.5 rounded-md bg-rose-50 text-rose-600 dark:bg-rose-950/70 dark:text-rose-300";
-        el.textContent = `▲ +${diff.toFixed(decimals)}`;
+    function toggleDataset(index) {
+      const meta = masterChart.getDatasetMeta(index);
+      meta.hidden = meta.hidden === null ? !masterChart.data.datasets[index].hidden : null;
+      masterChart.update();
+      const pill = document.getElementById(`pill-${index}`);
+      if (meta.hidden) {
+        pill.classList.add('opacity-30', 'line-through');
       } else {
-        el.className = "text-xs font-semibold px-2 py-0.5 rounded-md bg-sky-50 text-sky-600 dark:bg-sky-950/70 dark:text-sky-300";
-        el.textContent = `▼ ${diff.toFixed(decimals)}`;
+        pill.classList.remove('opacity-30', 'line-through');
       }
     }
 
-    // Update UI with latest dataset
+    // Set Gauge Rings
+    function setGauge(ringId, val, minVal, maxVal) {
+      const el = document.getElementById(ringId);
+      if (!el) return;
+      const pct = Math.min(Math.max((val - minVal) / (maxVal - minVal), 0), 1);
+      // circumference 100
+      const offset = 100 - (pct * 100);
+      el.style.strokeDashoffset = offset;
+    }
+
+    // Update Deltas
+    function setDelta(elId, current, prev, dec = 1) {
+      const el = document.getElementById(elId);
+      if (!el || prev === undefined || current === undefined) return;
+      const diff = current - prev;
+      if (Math.abs(diff) < 0.01) {
+        el.textContent = "─ 0.0";
+      } else if (diff > 0) {
+        el.textContent = `▲ +${diff.toFixed(dec)}`;
+      } else {
+        el.textContent = `▼ ${diff.toFixed(dec)}`;
+      }
+    }
+
+    // Update UI with Data
     function updateUI(data) {
       if (!data) return;
 
@@ -883,15 +892,14 @@
       const water = Number(data.water_level);
       const ts = data.timestamp || Math.floor(Date.now() / 1000);
 
-      // Check if new data arrived
-      const isNewReading = (lastTimestamp !== ts);
-      if (isNewReading) {
-        secondsSinceLastUpdate = 0;
-        lastTimestamp = ts;
+      const isNew = (lastTs !== ts);
+      if (isNew) {
+        secondsAgo = 0;
+        lastTs = ts;
         playBeep();
       }
 
-      // Update Values
+      // Values
       document.getElementById("val-temp").textContent = isNaN(temp) ? "--" : temp.toFixed(1);
       document.getElementById("val-humi").textContent = isNaN(humi) ? "--" : humi.toFixed(1);
       document.getElementById("val-soil").textContent = isNaN(soil) ? "--" : soil.toFixed(1);
@@ -900,113 +908,126 @@
       document.getElementById("val-pm25").textContent = isNaN(pm25) ? "--" : pm25.toFixed(1);
       document.getElementById("val-water").textContent = isNaN(water) ? "--" : water.toFixed(1);
 
-      // Update Chart Top Badges
-      document.getElementById("badge-chart-temp").textContent = `${temp.toFixed(1)} °C`;
-      document.getElementById("badge-chart-humi").textContent = `${humi.toFixed(1)} %`;
-      document.getElementById("badge-chart-light").textContent = `${Math.round(light)} lx`;
-      document.getElementById("badge-chart-soil").textContent = `${soil.toFixed(1)} %`;
-      document.getElementById("badge-chart-air").textContent = `${Math.round(co2)} ppm / ${pm25.toFixed(1)} µg/m³`;
+      // Radial Gauge Rings
+      setGauge("ring-temp", temp, 20, 45);
+      setGauge("ring-humi", humi, 30, 95);
+      setGauge("ring-soil", soil, 20, 90);
+      setGauge("ring-light", light, 0, 1500);
+      setGauge("ring-co2", co2, 350, 1200);
+      setGauge("ring-pm25", pm25, 0, 80);
+      setGauge("ring-water", water, 0, 100);
 
-      // Update Deltas
-      if (previousValues.temp !== undefined) {
-        updateDelta("delta-temp", temp, previousValues.temp, 1);
-        updateDelta("delta-humi", humi, previousValues.humi, 1);
-        updateDelta("delta-soil", soil, previousValues.soil, 1);
-        updateDelta("delta-light", light, previousValues.light, 0);
-        updateDelta("delta-co2", co2, previousValues.co2, 0);
-        updateDelta("delta-pm25", pm25, previousValues.pm25, 1);
-        updateDelta("delta-water", water, previousValues.water_level, 1);
+      // Deltas
+      if (prevData.temp !== undefined) {
+        setDelta("delta-temp", temp, prevData.temp, 1);
+        setDelta("delta-humi", humi, prevData.humi, 1);
+        setDelta("delta-soil", soil, prevData.soil, 1);
+        setDelta("delta-light", light, prevData.light, 0);
+        setDelta("delta-co2", co2, prevData.co2, 0);
+        setDelta("delta-pm25", pm25, prevData.pm25, 1);
+        setDelta("delta-water", water, prevData.water_level, 1);
       }
+      prevData = { ...data };
 
-      // Store previous values
-      previousValues = { ...data };
-
-      // Update Min/Max Stats
-      function recordStat(key, val, elId, unit, dec = 1) {
+      // Min/Max Records
+      function track(key, val, elId, dec = 1) {
         if (isNaN(val)) return;
         if (val < stats[key].min) stats[key].min = val;
         if (val > stats[key].max) stats[key].max = val;
         const el = document.getElementById(elId);
-        if (el) {
-          el.textContent = `ต่ำสุด ${stats[key].min.toFixed(dec)} · สูงสุด ${stats[key].max.toFixed(dec)}`;
-        }
+        if (el) el.textContent = `Min ${stats[key].min.toFixed(dec)} · Max ${stats[key].max.toFixed(dec)}`;
       }
-      recordStat("temp", temp, "stat-temp", "°C", 1);
-      recordStat("humi", humi, "stat-humi", "%", 1);
-      recordStat("soil", soil, "stat-soil", "%", 1);
-      recordStat("light", light, "stat-light", "lx", 0);
-      recordStat("co2", co2, "stat-co2", "ppm", 0);
-      recordStat("pm25", pm25, "stat-pm25", "µg/m³", 1);
-      recordStat("water", water, "stat-water", "%", 1);
+      track("temp", temp, "stat-temp", 1);
+      track("humi", humi, "stat-humi", 1);
+      track("soil", soil, "stat-soil", 1);
+      track("light", light, "stat-light", 0);
+      track("co2", co2, "stat-co2", 0);
+      track("pm25", pm25, "stat-pm25", 1);
+      track("water", water, "stat-water", 1);
 
-      // Update Clock Bar
-      document.getElementById("systemClock").textContent = formatDateTime(ts);
+      // Smart Edge Automation Logic
+      const pumpEl = document.getElementById("actuator-pump");
+      if (soil < 48) {
+        pumpEl.textContent = "ACTIVE: PUMPING";
+        pumpEl.className = "px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-sky-950 text-sky-400 border border-sky-600 status-ring";
+      } else {
+        pumpEl.textContent = "AUTO: STANDBY";
+        pumpEl.className = "px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-emerald-950 text-emerald-400 border border-emerald-800/50";
+      }
 
-      // Add to Charts if new reading
-      if (isNewReading) {
-        addPointToCharts(data);
+      const fanEl = document.getElementById("actuator-fan");
+      if (temp > 32 || co2 > 750) {
+        fanEl.textContent = "ACTIVE: COOLING";
+        fanEl.className = "px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-rose-950 text-rose-400 border border-rose-600 status-ring";
+      } else {
+        fanEl.textContent = "AUTO: NORMAL";
+        fanEl.className = "px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-indigo-950 text-indigo-400 border border-indigo-800/50";
+      }
+
+      // Server Clock
+      document.getElementById("liveClock").textContent = formatDateTime(ts);
+
+      // Append point to charts if new reading
+      if (isNew) {
+        addChartPoint(data);
       }
     }
 
-    function addPointToCharts(data) {
-      const timeLabel = formatTime(data.timestamp || Math.floor(Date.now() / 1000));
-      
-      // Limit to 15 points
-      if (chartTimeLabels.length >= 15) {
-        chartTimeLabels.shift();
-        tempChart.data.datasets[0].data.shift();
-        humiChart.data.datasets[0].data.shift();
-        lightChart.data.datasets[0].data.shift();
-        soilWaterChart.data.datasets[0].data.shift();
-        soilWaterChart.data.datasets[1].data.shift();
-        airChart.data.datasets[0].data.shift();
-        airChart.data.datasets[1].data.shift();
+    function addChartPoint(data) {
+      const label = formatTime(data.timestamp || Math.floor(Date.now() / 1000));
+      if (timeLabels.length >= 14) {
+        timeLabels.shift();
+        masterChart.data.datasets.forEach(ds => ds.data.shift());
+        microclimateChart.data.datasets.forEach(ds => ds.data.shift());
+        hydrologyChart.data.datasets.forEach(ds => ds.data.shift());
       }
+      timeLabels.push(label);
 
-      chartTimeLabels.push(timeLabel);
-      tempChart.data.datasets[0].data.push(data.temp);
-      humiChart.data.datasets[0].data.push(data.humi);
-      lightChart.data.datasets[0].data.push(data.light);
-      soilWaterChart.data.datasets[0].data.push(data.soil);
-      soilWaterChart.data.datasets[1].data.push(data.water_level);
-      airChart.data.datasets[0].data.push(data.co2);
-      airChart.data.datasets[1].data.push(data.pm25);
+      // Master Datasets:
+      masterChart.data.datasets[0].data.push(data.temp);
+      masterChart.data.datasets[1].data.push(data.humi);
+      masterChart.data.datasets[2].data.push(data.soil);
+      masterChart.data.datasets[3].data.push((data.light / 10).toFixed(1));
+      masterChart.data.datasets[4].data.push((data.co2 / 10).toFixed(1));
+      masterChart.data.datasets[5].data.push(data.pm25);
+      masterChart.data.datasets[6].data.push(data.water_level);
+      masterChart.update();
 
-      tempChart.update();
-      humiChart.update();
-      lightChart.update();
-      soilWaterChart.update();
-      airChart.update();
+      // Microclimate:
+      microclimateChart.data.datasets[0].data.push(data.temp);
+      microclimateChart.data.datasets[1].data.push(data.humi);
+      microclimateChart.update();
+
+      // Hydrology:
+      hydrologyChart.data.datasets[0].data.push(data.soil);
+      hydrologyChart.data.datasets[1].data.push(data.water_level);
+      hydrologyChart.update();
     }
 
-    // Populate History Table
-    function renderHistoryTable(records) {
-      const tbody = document.getElementById("historyTableBody");
+    // Render Table
+    function renderTable(records) {
+      const tbody = document.getElementById("historyTbody");
       if (!tbody) return;
-
       if (!records || records.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="py-6 text-center text-slate-400">ยังไม่มีข้อมูลในประวัติ</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="py-6 text-center text-slate-500 font-sans">ยังไม่มีข้อมูลในประวัติ</td></tr>`;
         return;
       }
-
       historyRecords = records;
-
       let html = "";
       records.forEach(r => {
-        const timeStr = formatDateTime(r.timestamp);
         html += `
-          <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
-            <td class="py-2.5 px-4 font-sans text-slate-600 dark:text-slate-300">${timeStr}</td>
-            <td class="py-2.5 px-3 font-semibold text-rose-500">${Number(r.temp).toFixed(1)}</td>
-            <td class="py-2.5 px-3 text-sky-500">${Number(r.humi).toFixed(1)}</td>
-            <td class="py-2.5 px-3 text-emerald-500">${Number(r.soil).toFixed(1)}</td>
-            <td class="py-2.5 px-3 text-amber-500">${Math.round(Number(r.light))}</td>
-            <td class="py-2.5 px-3 text-purple-500">${Math.round(Number(r.co2))}</td>
-            <td class="py-2.5 px-3 text-teal-500">${Number(r.pm25).toFixed(1)}</td>
-            <td class="py-2.5 px-3 text-blue-600">${Number(r.water_level).toFixed(1)}</td>
-            <td class="py-2.5 px-4 text-center font-sans">
-              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
-                ปกติ
+          <tr class="hover:bg-slate-800/50 light:hover:bg-slate-100/70 transition-colors">
+            <td class="py-2.5 px-4 text-slate-400 font-sans">${formatDateTime(r.timestamp)}</td>
+            <td class="py-2.5 px-3 font-semibold text-rose-400">${Number(r.temp).toFixed(1)}</td>
+            <td class="py-2.5 px-3 text-sky-400">${Number(r.humi).toFixed(1)}</td>
+            <td class="py-2.5 px-3 text-emerald-400">${Number(r.soil).toFixed(1)}</td>
+            <td class="py-2.5 px-3 text-amber-400">${Math.round(Number(r.light))}</td>
+            <td class="py-2.5 px-3 text-purple-400">${Math.round(Number(r.co2))}</td>
+            <td class="py-2.5 px-3 text-teal-400">${Number(r.pm25).toFixed(1)}</td>
+            <td class="py-2.5 px-3 text-blue-400">${Number(r.water_level).toFixed(1)}</td>
+            <td class="py-2.5 px-4 text-center">
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-emerald-950/80 text-emerald-400 border border-emerald-800/60">
+                OK
               </span>
             </td>
           </tr>
@@ -1015,141 +1036,126 @@
       tbody.innerHTML = html;
     }
 
-    // Export CSV Function
-    function exportToCSV() {
+    // Export CSV
+    function exportCSV() {
       if (!historyRecords || historyRecords.length === 0) {
         alert("ยังไม่มีข้อมูลสำหรับ Export");
         return;
       }
-      let csv = "Timestamp,DateTime,Temperature(C),Humidity(%),SoilMoisture(%),Light(lx),CO2(ppm),PM25(ug/m3),WaterLevel(%)\n";
+      let csv = "Timestamp,DateTime,Temp_C,Humidity_Pct,SoilMoisture_Pct,Light_lx,CO2_ppm,PM25_ugm3,WaterLevel_Pct\n";
       historyRecords.forEach(r => {
         csv += `${r.timestamp},"${formatDateTime(r.timestamp)}",${r.temp},${r.humi},${r.soil},${r.light},${r.co2},${r.pm25},${r.water_level}\n`;
       });
-
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.setAttribute("href", url);
-      link.setAttribute("download", `iot-230-sensor-history-${Date.now()}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `iot-230-telemetry-${Date.now()}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     }
 
-    // Fetch Initial History Records
+    // Fetch History Initial
     async function fetchHistory() {
       try {
-        const res = await fetch(HISTORY_ENDPOINT);
+        const res = await fetch(HISTORY_URL);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (data) {
           const list = Object.keys(data).map(k => data[k]);
           list.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
 
-          // Seed chart with historical points
-          const recentPoints = list.slice(-12);
-          recentPoints.forEach(pt => {
-            const timeLabel = formatTime(pt.timestamp);
-            chartTimeLabels.push(timeLabel);
-            tempChart.data.datasets[0].data.push(pt.temp);
-            humiChart.data.datasets[0].data.push(pt.humi);
-            lightChart.data.datasets[0].data.push(pt.light);
-            soilWaterChart.data.datasets[0].data.push(pt.soil);
-            soilWaterChart.data.datasets[1].data.push(pt.water_level);
-            airChart.data.datasets[0].data.push(pt.co2);
-            airChart.data.datasets[1].data.push(pt.pm25);
-          });
-          tempChart.update();
-          humiChart.update();
-          lightChart.update();
-          soilWaterChart.update();
-          airChart.update();
+          const recent = list.slice(-10);
+          recent.forEach(pt => {
+            const lbl = formatTime(pt.timestamp);
+            timeLabels.push(lbl);
+            masterChart.data.datasets[0].data.push(pt.temp);
+            masterChart.data.datasets[1].data.push(pt.humi);
+            masterChart.data.datasets[2].data.push(pt.soil);
+            masterChart.data.datasets[3].data.push((pt.light / 10).toFixed(1));
+            masterChart.data.datasets[4].data.push((pt.co2 / 10).toFixed(1));
+            masterChart.data.datasets[5].data.push(pt.pm25);
+            masterChart.data.datasets[6].data.push(pt.water_level);
 
-          // Render table with latest first
-          const tableList = [...list].reverse().slice(0, 15);
-          renderHistoryTable(tableList);
+            microclimateChart.data.datasets[0].data.push(pt.temp);
+            microclimateChart.data.datasets[1].data.push(pt.humi);
+
+            hydrologyChart.data.datasets[0].data.push(pt.soil);
+            hydrologyChart.data.datasets[1].data.push(pt.water_level);
+          });
+          masterChart.update();
+          microclimateChart.update();
+          hydrologyChart.update();
+
+          renderTable([...list].reverse().slice(0, 15));
         }
       } catch (err) {
-        console.warn("Could not fetch history:", err);
+        console.warn("History fetch notice:", err);
       }
     }
 
-    // Fetch Latest Data via REST
+    // Fetch Latest
     async function fetchLatestData(manual = false) {
       try {
-        const res = await fetch(LATEST_ENDPOINT + `?t=${Date.now()}`);
+        const res = await fetch(`${LATEST_URL}?_=${Date.now()}`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (data) {
           updateUI(data);
-          setConnectionState(true);
+          setConn(true);
         }
-      } catch (err) {
-        console.error("Latest fetch error:", err);
-        setConnectionState(false);
+      } catch (e) {
+        setConn(false);
       }
     }
 
-    // Setup Realtime Firebase EventSource (SSE)
-    function setupEventSource() {
+    // Realtime SSE EventSource
+    function setupSSE() {
       try {
-        const sse = new EventSource(LATEST_ENDPOINT);
-
+        const sse = new EventSource(LATEST_URL);
         sse.addEventListener('put', function(e) {
           try {
-            const parsed = JSON.parse(e.data);
-            if (parsed && parsed.data) {
-              updateUI(parsed.data);
-              setConnectionState(true);
+            const payload = JSON.parse(e.data);
+            if (payload && payload.data) {
+              updateUI(payload.data);
+              setConn(true);
             }
-          } catch (err) {
-            console.error("SSE parse error:", err);
-          }
+          } catch (err) {}
         });
-
-        sse.onopen = function() {
-          setConnectionState(true);
-        };
-
-        sse.onerror = function() {
-          console.warn("SSE disconnected, relying on polling fallback");
-          setConnectionState(false, "เชื่อมต่อใหม่...");
-        };
-      } catch (e) {
-        console.warn("EventSource not supported, using fallback timer");
-      }
+        sse.onopen = () => setConn(true);
+        sse.onerror = () => setConn(false, "RECONNECTING");
+      } catch (e) {}
     }
 
-    function setConnectionState(online, text) {
-      const statusPill = document.getElementById("connectionStatus");
-      const statusText = document.getElementById("connectionText");
+    function setConn(online, msg) {
+      const pill = document.getElementById("livePill");
+      const txt = document.getElementById("livePillText");
       if (online) {
-        statusPill.className = "flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/70 dark:text-emerald-300 dark:border-emerald-800/80 shadow-sm transition-all";
-        statusText.textContent = text || "LIVE • เชื่อมต่อ Firebase แล้ว";
+        pill.className = "flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono font-medium bg-emerald-950/70 light:bg-emerald-100 text-emerald-400 light:text-emerald-800 border border-emerald-800/70 light:border-emerald-300 shadow-sm";
+        txt.textContent = msg || "LIVE STREAM";
       } else {
-        statusPill.className = "flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/70 dark:text-amber-300 dark:border-amber-800/80 shadow-sm transition-all";
-        statusText.textContent = text || "กำลังเชื่อมต่อ...";
+        pill.className = "flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono font-medium bg-amber-950/70 light:bg-amber-100 text-amber-400 light:text-amber-800 border border-amber-800/70 light:border-amber-300 shadow-sm";
+        txt.textContent = msg || "SYNCING";
       }
     }
 
-    // 1-Second Ticker for "X seconds ago"
+    // Ticker
     setInterval(() => {
-      secondsSinceLastUpdate++;
-      const agoEl = document.getElementById("timeAgoText");
-      if (agoEl) {
-        agoEl.textContent = `${secondsSinceLastUpdate} วินาที`;
-      }
+      secondsAgo++;
+      const el = document.getElementById("ageSeconds");
+      if (el) el.textContent = `${secondsAgo} วินาที`;
     }, 1000);
 
-    // Initial Page Boot
+    // Boot
     window.addEventListener("DOMContentLoaded", async () => {
       lucide.createIcons();
       initCharts();
       await fetchHistory();
       await fetchLatestData();
-      setupEventSource();
+      setupSSE();
 
-      // Reliable polling fallback every 5 seconds
+      // Reliable polling fallback every 5s
       setInterval(() => {
         fetchLatestData();
       }, 5000);
