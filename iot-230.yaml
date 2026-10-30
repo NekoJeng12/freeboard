@@ -1,0 +1,181 @@
+# Board: ESP32 DevKit V1 (Espressif)
+# IoT-230 Smart Agro-Environmental & Farm System
+
+esphome:
+  name: iot-230
+  friendly_name: iot-230
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+logger:
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  power_save_mode: none
+  on_connect:
+    then:
+      - logger.log: "=== WIFI CONNECTED ==="
+  on_disconnect:
+    then:
+      - logger.log: "=== WIFI DISCONNECTED ==="
+
+time:
+  - platform: sntp
+    id: sntp_time
+    timezone: Asia/Bangkok
+    on_time_sync:
+      then:
+        - logger.log: "Time synchronized"
+
+http_request:
+  timeout: 10s
+
+sensor:
+  # 1. Temperature (°C)
+  - platform: template
+    id: temp
+    name: "Temperature"
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    update_interval: 5s
+    lambda: |-
+      return 25.0 + random_float() * 10.0;
+
+  # 2. Air Humidity (%)
+  - platform: template
+    id: humi
+    name: "Humidity"
+    unit_of_measurement: "%"
+    accuracy_decimals: 1
+    update_interval: 5s
+    lambda: |-
+      return 50.0 + random_float() * 30.0;
+
+  # 3. Soil Moisture (%)
+  - platform: template
+    id: soil
+    name: "Soil Moisture"
+    unit_of_measurement: "%"
+    accuracy_decimals: 1
+    update_interval: 5s
+    lambda: |-
+      return 40.0 + random_float() * 35.0;
+
+  # 4. Light Intensity (lx)
+  - platform: template
+    id: light
+    name: "Light"
+    unit_of_measurement: "lx"
+    accuracy_decimals: 0
+    update_interval: 5s
+    lambda: |-
+      return 150.0 + random_float() * 950.0;
+
+  # 5. CO2 Concentration (ppm)
+  - platform: template
+    id: co2
+    name: "CO2"
+    unit_of_measurement: "ppm"
+    accuracy_decimals: 0
+    update_interval: 5s
+    lambda: |-
+      return 400.0 + random_float() * 500.0;
+
+  # 6. PM2.5 Dust (µg/m³)
+  - platform: template
+    id: pm25
+    name: "PM2.5"
+    unit_of_measurement: "µg/m³"
+    accuracy_decimals: 1
+    update_interval: 5s
+    lambda: |-
+      return 12.0 + random_float() * 45.0;
+
+  # 7. Water Reservoir Level (%)
+  - platform: template
+    id: water_level
+    name: "Water Level"
+    unit_of_measurement: "%"
+    accuracy_decimals: 1
+    update_interval: 5s
+    lambda: |-
+      return 45.0 + random_float() * 50.0;
+
+interval:
+  - interval: 10s
+    then:
+      - if:
+          condition:
+            and:
+              - wifi.connected
+              - lambda: |-
+                  return id(sntp_time).now().is_valid();
+          then:
+            - logger.log:
+                format: "Send temp=%.1f humi=%.1f soil=%.1f light=%.0f co2=%.0f pm25=%.1f water=%.1f"
+                args:
+                  - id(temp).state
+                  - id(humi).state
+                  - id(soil).state
+                  - id(light).state
+                  - id(co2).state
+                  - id(pm25).state
+                  - id(water_level).state
+            # =========================
+            # 1. PUT -> latest
+            # =========================
+            - http_request.send:
+                method: PUT
+                url: "https://iot-230-default-rtdb.asia-southeast1.firebasedatabase.app/lab/esp32/latest.json"
+                request_headers:
+                  Content-Type: application/json
+                json: |-
+                  root["temp"] = id(temp).state;
+                  root["humi"] = id(humi).state;
+                  root["soil"] = id(soil).state;
+                  root["light"] = id(light).state;
+                  root["co2"] = id(co2).state;
+                  root["pm25"] = id(pm25).state;
+                  root["water_level"] = id(water_level).state;
+                  root["timestamp"] = id(sntp_time).now().timestamp;
+                on_response:
+                  then:
+                    - logger.log:
+                        format: "Latest HTTP status = %d"
+                        args:
+                          - response->status_code
+                on_error:
+                  then:
+                    - logger.log: "Latest upload failed"
+            # =========================
+            # 2. POST -> history
+            # =========================
+            - http_request.send:
+                method: POST
+                url: "https://iot-230-default-rtdb.asia-southeast1.firebasedatabase.app/lab/esp32/history.json"
+                request_headers:
+                  Content-Type: application/json
+                json: |-
+                  root["temp"] = id(temp).state;
+                  root["humi"] = id(humi).state;
+                  root["soil"] = id(soil).state;
+                  root["light"] = id(light).state;
+                  root["co2"] = id(co2).state;
+                  root["pm25"] = id(pm25).state;
+                  root["water_level"] = id(water_level).state;
+                  root["timestamp"] = id(sntp_time).now().timestamp;
+                on_response:
+                  then:
+                    - logger.log:
+                        format: "History HTTP status = %d"
+                        args:
+                          - response->status_code
+                on_error:
+                  then:
+                    - logger.log: "History upload failed"
+          else:
+            - logger.log: "Skip Firebase: WiFi or time not ready"
