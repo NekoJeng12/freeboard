@@ -289,8 +289,7 @@
           <div class="glass-card rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between group">
             <div class="flex items-start justify-between">
               <div>
-                <span class="text-xs font-semibold text-rose-400 flex items-center gap-1.5 uppercase tracking-wide">
-                  <i data-lucide="thermometer" class="w-3.5 h-3.5"></i>
+                <span class="text-xs font-semibold text-rose-400 uppercase tracking-wider">
                   อุณหภูมิ (Air Temp)
                 </span>
                 <div class="flex items-baseline gap-1 mt-2">
@@ -298,13 +297,8 @@
                   <span class="text-sm font-medium text-slate-400">°C</span>
                 </div>
               </div>
-              <!-- Radial Mini Meter -->
-              <div class="relative w-14 h-14 flex items-center justify-center">
-                <svg class="w-14 h-14" viewBox="0 0 36 36">
-                  <path class="text-slate-800 light:text-slate-200 stroke-current" stroke-width="3.2" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                  <path id="ring-temp" class="gauge-circle text-rose-500 stroke-current" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="100, 100" stroke-dashoffset="65" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                </svg>
-                <div id="delta-temp" class="absolute text-[10px] font-bold font-mono text-rose-400">─ 0.0</div>
+              <div class="p-3 rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/20 shadow-sm">
+                <i data-lucide="thermometer" class="w-5 h-5"></i>
               </div>
             </div>
             <div class="mt-4 pt-3 border-t border-slate-800/80 light:border-slate-200/80 flex items-center justify-between text-xs text-slate-400">
@@ -317,8 +311,7 @@
           <div class="glass-card rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between group">
             <div class="flex items-start justify-between">
               <div>
-                <span class="text-xs font-semibold text-sky-400 flex items-center gap-1.5 uppercase tracking-wide">
-                  <i data-lucide="droplets" class="w-3.5 h-3.5"></i>
+                <span class="text-xs font-semibold text-sky-400 uppercase tracking-wider">
                   ความชื้นอากาศ (Humidity)
                 </span>
                 <div class="flex items-baseline gap-1 mt-2">
@@ -326,12 +319,8 @@
                   <span class="text-sm font-medium text-slate-400">%</span>
                 </div>
               </div>
-              <div class="relative w-14 h-14 flex items-center justify-center">
-                <svg class="w-14 h-14" viewBox="0 0 36 36">
-                  <path class="text-slate-800 light:text-slate-200 stroke-current" stroke-width="3.2" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                  <path id="ring-humi" class="gauge-circle text-sky-400 stroke-current" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="100, 100" stroke-dashoffset="40" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                </svg>
-                <div id="delta-humi" class="absolute text-[10px] font-bold font-mono text-sky-400">─ 0.0</div>
+              <div class="p-3 rounded-2xl bg-sky-500/10 text-sky-400 border border-sky-500/20 shadow-sm">
+                <i data-lucide="droplets" class="w-5 h-5"></i>
               </div>
             </div>
             <div class="mt-4 pt-3 border-t border-slate-800/80 light:border-slate-200/80 flex items-center justify-between text-xs text-slate-400">
@@ -344,8 +333,7 @@
           <div class="glass-card rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between group">
             <div class="flex items-start justify-between">
               <div>
-                <span class="text-xs font-semibold text-emerald-400 flex items-center gap-1.5 uppercase tracking-wide">
-                  <i data-lucide="sprout" class="w-3.5 h-3.5"></i>
+                <span class="text-xs font-semibold text-emerald-400 uppercase tracking-wider">
                   ความชื้นในดิน (Soil Moisture)
                 </span>
                 <div class="flex items-baseline gap-1 mt-2">
@@ -353,12 +341,8 @@
                   <span class="text-sm font-medium text-slate-400">%</span>
                 </div>
               </div>
-              <div class="relative w-14 h-14 flex items-center justify-center">
-                <svg class="w-14 h-14" viewBox="0 0 36 36">
-                  <path class="text-slate-800 light:text-slate-200 stroke-current" stroke-width="3.2" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                  <path id="ring-soil" class="gauge-circle text-emerald-400 stroke-current" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="100, 100" stroke-dashoffset="45" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                </svg>
-                <div id="delta-soil" class="absolute text-[10px] font-bold font-mono text-emerald-400">─ 0.0</div>
+              <div class="p-3 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm">
+                <i data-lucide="sprout" class="w-5 h-5"></i>
               </div>
             </div>
             <div class="mt-4 pt-3 border-t border-slate-800/80 light:border-slate-200/80 flex items-center justify-between text-xs text-slate-400">
@@ -371,8 +355,7 @@
           <div class="glass-card rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between group">
             <div class="flex items-start justify-between">
               <div>
-                <span class="text-xs font-semibold text-amber-400 flex items-center gap-1.5 uppercase tracking-wide">
-                  <i data-lucide="sun" class="w-3.5 h-3.5"></i>
+                <span class="text-xs font-semibold text-amber-400 uppercase tracking-wider">
                   ความเข้มแสง (Light)
                 </span>
                 <div class="flex items-baseline gap-1 mt-2">
@@ -380,12 +363,8 @@
                   <span class="text-sm font-medium text-slate-400">lx</span>
                 </div>
               </div>
-              <div class="relative w-14 h-14 flex items-center justify-center">
-                <svg class="w-14 h-14" viewBox="0 0 36 36">
-                  <path class="text-slate-800 light:text-slate-200 stroke-current" stroke-width="3.2" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                  <path id="ring-light" class="gauge-circle text-amber-400 stroke-current" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="100, 100" stroke-dashoffset="50" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                </svg>
-                <div id="delta-light" class="absolute text-[10px] font-bold font-mono text-amber-400">─ 0</div>
+              <div class="p-3 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-sm">
+                <i data-lucide="sun" class="w-5 h-5"></i>
               </div>
             </div>
             <div class="mt-4 pt-3 border-t border-slate-800/80 light:border-slate-200/80 flex items-center justify-between text-xs text-slate-400">
@@ -398,8 +377,7 @@
           <div class="glass-card rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between group">
             <div class="flex items-start justify-between">
               <div>
-                <span class="text-xs font-semibold text-purple-400 flex items-center gap-1.5 uppercase tracking-wide">
-                  <i data-lucide="wind" class="w-3.5 h-3.5"></i>
+                <span class="text-xs font-semibold text-purple-400 uppercase tracking-wider">
                   ก๊าซ CO2 (Carbon Dioxide)
                 </span>
                 <div class="flex items-baseline gap-1 mt-2">
@@ -407,12 +385,8 @@
                   <span class="text-sm font-medium text-slate-400">ppm</span>
                 </div>
               </div>
-              <div class="relative w-14 h-14 flex items-center justify-center">
-                <svg class="w-14 h-14" viewBox="0 0 36 36">
-                  <path class="text-slate-800 light:text-slate-200 stroke-current" stroke-width="3.2" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                  <path id="ring-co2" class="gauge-circle text-purple-400 stroke-current" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="100, 100" stroke-dashoffset="40" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                </svg>
-                <div id="delta-co2" class="absolute text-[10px] font-bold font-mono text-purple-400">─ 0</div>
+              <div class="p-3 rounded-2xl bg-purple-500/10 text-purple-400 border border-purple-500/20 shadow-sm">
+                <i data-lucide="wind" class="w-5 h-5"></i>
               </div>
             </div>
             <div class="mt-4 pt-3 border-t border-slate-800/80 light:border-slate-200/80 flex items-center justify-between text-xs text-slate-400">
@@ -425,8 +399,7 @@
           <div class="glass-card rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between group">
             <div class="flex items-start justify-between">
               <div>
-                <span class="text-xs font-semibold text-teal-400 flex items-center gap-1.5 uppercase tracking-wide">
-                  <i data-lucide="cloud-fog" class="w-3.5 h-3.5"></i>
+                <span class="text-xs font-semibold text-teal-400 uppercase tracking-wider">
                   ฝุ่นละออง PM2.5
                 </span>
                 <div class="flex items-baseline gap-1 mt-2">
@@ -434,12 +407,8 @@
                   <span class="text-sm font-medium text-slate-400">µg/m³</span>
                 </div>
               </div>
-              <div class="relative w-14 h-14 flex items-center justify-center">
-                <svg class="w-14 h-14" viewBox="0 0 36 36">
-                  <path class="text-slate-800 light:text-slate-200 stroke-current" stroke-width="3.2" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                  <path id="ring-pm25" class="gauge-circle text-teal-400 stroke-current" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="100, 100" stroke-dashoffset="60" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                </svg>
-                <div id="delta-pm25" class="absolute text-[10px] font-bold font-mono text-teal-400">─ 0.0</div>
+              <div class="p-3 rounded-2xl bg-teal-500/10 text-teal-400 border border-teal-500/20 shadow-sm">
+                <i data-lucide="cloud-fog" class="w-5 h-5"></i>
               </div>
             </div>
             <div class="mt-4 pt-3 border-t border-slate-800/80 light:border-slate-200/80 flex items-center justify-between text-xs text-slate-400">
@@ -452,8 +421,7 @@
           <div class="glass-card rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between group">
             <div class="flex items-start justify-between">
               <div>
-                <span class="text-xs font-semibold text-blue-400 flex items-center gap-1.5 uppercase tracking-wide">
-                  <i data-lucide="waves" class="w-3.5 h-3.5"></i>
+                <span class="text-xs font-semibold text-blue-400 uppercase tracking-wider">
                   ระดับน้ำในถังสำรอง
                 </span>
                 <div class="flex items-baseline gap-1 mt-2">
@@ -461,12 +429,8 @@
                   <span class="text-sm font-medium text-slate-400">%</span>
                 </div>
               </div>
-              <div class="relative w-14 h-14 flex items-center justify-center">
-                <svg class="w-14 h-14" viewBox="0 0 36 36">
-                  <path class="text-slate-800 light:text-slate-200 stroke-current" stroke-width="3.2" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                  <path id="ring-water" class="gauge-circle text-blue-400 stroke-current" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="100, 100" stroke-dashoffset="30" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                </svg>
-                <div id="delta-water" class="absolute text-[10px] font-bold font-mono text-blue-400">─ 0.0</div>
+              <div class="p-3 rounded-2xl bg-blue-500/10 text-blue-400 border border-blue-500/20 shadow-sm">
+                <i data-lucide="waves" class="w-5 h-5"></i>
               </div>
             </div>
             <div class="mt-4 pt-3 border-t border-slate-800/80 light:border-slate-200/80 flex items-center justify-between text-xs text-slate-400">
